@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.minicomanda.databinding.ActivityMainBinding
@@ -11,11 +12,13 @@ import com.example.minicomanda.ui.cocina.CocinaFragment
 import com.example.minicomanda.ui.comandas.ComandasFragment
 import com.example.minicomanda.ui.historial.HistorialFragment
 import com.example.minicomanda.ui.menu.MenuFragment
+import com.example.minicomanda.ui.salas.LobbyViewModel
 import com.example.minicomanda.ui.salas.SalasFragment
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val lobbyViewModel: LobbyViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +57,11 @@ class MainActivity : AppCompatActivity() {
                 animateIcon(itemView)
                 true
             } ?: false
+        }
+
+        lobbyViewModel.currentLobby.observe(this) { lobby ->
+            val roomText = if (lobby != null) "Sala: ${lobby.lobbyId}" else "Sala: ---"
+            binding.tvRoomId.text = roomText
         }
     }
 
