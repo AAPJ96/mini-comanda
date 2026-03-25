@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Mis colores -->
+    <color name="header_background">#487ab6</color>
+    <color name="pill_background">#FFFFFF</color>
+    <color name="pill_text">#fe574f</color>
+    <color name="bottom_nav_background">#F0F0F0</color>
+    <color name="bottom_nav_item_selected">#fe574f</color>
+    <color name="bottom_nav_item_default">#487ab6</color>
+    <color name="bottom_nav_selected_background">#FFFFFF</color>
 </resources>
