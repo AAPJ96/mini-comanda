@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_cocina"
+        android:icon="@drawable/ic_kitchen"
+        android:title="Cocina" />
+    <item
+        android:id="@+id/nav_comandas"
+        android:icon="@drawable/ic_receipt"
+        android:title="Comandas" />
+    <item
+        android:id="@+id/nav_historial"
+        android:icon="@drawable/ic_history"
+        android:title="Historial" />
+    <item
+        android:id="@+id/nav_menu"
+        android:icon="@drawable/ic_menu"
+        android:title="Menú" />
+    <item
+        android:id="@+id/nav_salas"
+        android:icon="@drawable/ic_lobby"
+        android:title="Salas" />
+</menu>
