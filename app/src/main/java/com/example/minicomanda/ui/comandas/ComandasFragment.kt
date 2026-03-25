@@ -1,60 +1,82 @@
 package com.example.minicomanda.ui.comandas
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.minicomanda.R
+import com.example.minicomanda.data.local.entities.Comanda
+import com.example.minicomanda.data.local.entities.PedidoDetalle
+import com.example.minicomanda.databinding.FragmentComandasBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ComandasFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ComandasFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private var _binding: FragmentComandasBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel: ComandasViewModel by viewModels()
+    private lateinit var adapter: ComandasAdapter
+
+    var currentComandas: List<Comanda>? = null
+    var currentDetalles: Map<Int, List<PedidoDetalle>>? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentComandasBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Configurar RecyclerView
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = ComandasAdapter(
+            comandas = emptyList(),
+            detallesPorComanda = emptyMap(),
+            onEditClick = { comanda ->
+                Toast.makeText(requireContext(), "Editar: ${comanda.folio}", Toast.LENGTH_SHORT).show()
+                // Navegar a fragmento de edición (por hacer)
+            },
+            onDeleteClick = { comanda ->
+                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Eliminar comanda")
+                    .setMessage("¿Eliminar la comanda ${comanda.folio}?")
+                    .setPositiveButton("Eliminar") { _, _ ->
+                        viewModel.deleteComanda(comanda)
+                        Toast.makeText(requireContext(), "Comanda eliminada", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+            }
+        )
+        binding.recyclerView.adapter = adapter
+
+        // Observar datos
+        viewModel.comandas.observe(viewLifecycleOwner) { comandas ->
+            currentComandas = comandas
+            // Enviamos las comandas y usamos los detalles actuales o un mapa vacío si aún no llegan
+            adapter.updateData(comandas, currentDetalles ?: emptyMap())
+        }
+
+        viewModel.detalles.observe(viewLifecycleOwner) { detalles ->
+            currentDetalles = detalles
+            // Enviamos los detalles y usamos las comandas actuales o una lista vacía
+            adapter.updateData(currentComandas ?: emptyList(), detalles)
+        }
+
+        // FAB para agregar
+        binding.fabAdd.setOnClickListener {
+            Toast.makeText(requireContext(), "Agregar comanda (próximamente)", Toast.LENGTH_SHORT).show()
+            // Navegar a fragmento de nueva comanda
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_comandas, container, false)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ComandasFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ComandasFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
