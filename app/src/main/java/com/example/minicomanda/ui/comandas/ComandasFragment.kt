@@ -40,17 +40,6 @@ class ComandasFragment : Fragment() {
             onEditClick = { comanda ->
                 Toast.makeText(requireContext(), "Editar: ${comanda.folio}", Toast.LENGTH_SHORT).show()
                 // Navegar a fragmento de edición (por hacer)
-            },
-            onDeleteClick = { comanda ->
-                androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                    .setTitle("Eliminar comanda")
-                    .setMessage("¿Eliminar la comanda ${comanda.folio}?")
-                    .setPositiveButton("Eliminar") { _, _ ->
-                        viewModel.deleteComanda(comanda)
-                        Toast.makeText(requireContext(), "Comanda eliminada", Toast.LENGTH_SHORT).show()
-                    }
-                    .setNegativeButton("Cancelar", null)
-                    .show()
             }
         )
         binding.recyclerView.adapter = adapter

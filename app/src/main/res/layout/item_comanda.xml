@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <!-- Renglón 1: Folio (rojo), Fecha (negro), Estado (gris) -->
+        <!-- Renglón 1: Folio (rojo), Fecha (negro), Estado (verde) -->
         <TextView
             android:id="@+id/tv_folio"
             android:layout_width="0dp"
@@ -34,6 +34,7 @@
             android:text="25/03/2025"
             android:textColor="@android:color/black"
             android:textSize="12sp"
+            android:layout_marginEnd="8dp"
             app:layout_constraintStart_toEndOf="@+id/tv_folio"
             app:layout_constraintTop_toTopOf="@+id/tv_folio"
             app:layout_constraintEnd_toStartOf="@+id/tv_estado" />
@@ -43,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ACTIVA"
-            android:textColor="@color/pill_text"
+            android:textColor="@color/active_green"
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -73,61 +74,30 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_cliente" />
 
-        <!-- Contenedor del desglose (colapsable) -->
+        <!-- Contenedor del desglose (contenedor dinámico) -->
         <LinearLayout
             android:id="@+id/layout_detalles"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="12dp"
+            android:visibility="visible"
             app:layout_constraintTop_toBottomOf="@+id/tv_cliente"
             app:layout_constraintStart_toStartOf="parent"
-            android:visibility="gone">
+            app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_detalle_texto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Persona 1  $150\n5 x Taco Carne Maiz $125\n1 x frijoles 1/4 Lt $25\n\nPersona 2 $54\n3 x Taco Papa Maiz $54\n\nTotal Pedido $204"
-                android:textColor="@android:color/black"
-                android:textSize="12sp"
-                android:lineSpacingExtra="4dp" />
-
-        </LinearLayout>
-
-        <!-- Renglón de botones (siempre visibles) -->
-        <LinearLayout
-            android:id="@+id/layout_botones"
-            android:layout_width="match_parent"
+        <!-- Renglón de botones (solo Editar) -->
+        <Button
+            android:id="@+id/btn_editar"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            app:layout_constraintWidth_percent="0.33"
             android:layout_marginTop="12dp"
-            android:gravity="center"
+            android:text="EDITAR"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/header_background"
             app:layout_constraintTop_toBottomOf="@+id/layout_detalles"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <Button
-                android:id="@+id/btn_editar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="Editar"
-                android:backgroundTint="@color/header_background"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-            <Button
-                android:id="@+id/btn_eliminar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:text="Eliminar"
-                android:backgroundTint="@color/pill_text"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-        </LinearLayout>
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
