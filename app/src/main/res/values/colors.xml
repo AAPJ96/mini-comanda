@@ -3,6 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#2A2A2A</color>
+    <color name="blue">#487ab6</color>
+    <color name="red">#fe574f</color>
 
     <!-- Mis colores -->
     <color name="header_background">#487ab6</color>

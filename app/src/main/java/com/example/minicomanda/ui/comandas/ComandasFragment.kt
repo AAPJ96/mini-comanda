@@ -59,8 +59,12 @@ class ComandasFragment : Fragment() {
 
         // FAB para agregar
         binding.fabAdd.setOnClickListener {
-            Toast.makeText(requireContext(), "Agregar comanda (próximamente)", Toast.LENGTH_SHORT).show()
-            // Navegar a fragmento de nueva comanda
+            // Reemplazar el Toast por la navegación
+            val agregarFragment = AgregarComandaFragment()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, agregarFragment)
+                .addToBackStack(null)
+                .commit()
         }
     }
 

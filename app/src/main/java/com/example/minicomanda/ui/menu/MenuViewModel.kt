@@ -9,6 +9,22 @@ class MenuViewModel : ViewModel() {
     private val _menuItems = MutableLiveData<List<MenuItem>>(emptyList())
     val menuItems: LiveData<List<MenuItem>> = _menuItems
 
+    init {
+        // Cargar datos dummy si la lista está vacía
+        if (_menuItems.value.isNullOrEmpty()) {
+            loadDummyData()
+        }
+    }
+
+    private fun loadDummyData() {
+        val dummy = listOf(
+            MenuItem(1, "Taco Carne Maíz", 25.0),
+            MenuItem(2, "Taco Carne Harina", 35.0),
+            MenuItem(3, "Taco Papa Maiz", 30.0),
+            MenuItem(4, "Taco Papa Harina", 45.0)
+        )
+        _menuItems.value = dummy
+    }
     fun setMenuItems(items: List<MenuItem>) {
         _menuItems.value = items
     }
