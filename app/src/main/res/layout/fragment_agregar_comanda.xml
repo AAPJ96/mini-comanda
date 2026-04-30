@@ -29,13 +29,13 @@
 
         <!-- Píldoras de personas (horizontal con botón +) -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_personas_pills"
+            android:id="@+id/rvPersonasPills"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
             android:clipChildren="false"
             android:clipToPadding="false"
+            android:paddingHorizontal="8dp"
+            android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <!-- Controles de grid del menú -->
