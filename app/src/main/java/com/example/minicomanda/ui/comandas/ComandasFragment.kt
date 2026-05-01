@@ -38,8 +38,12 @@ class ComandasFragment : Fragment() {
             comandas = emptyList(),
             detallesPorComanda = emptyMap(),
             onEditClick = { comanda ->
-                Toast.makeText(requireContext(), "Editar: ${comanda.folio}", Toast.LENGTH_SHORT).show()
-                // Navegar a fragmento de edición (por hacer)
+                val folio = comanda.folio
+                val editarFragment = EditarComandaFragment.newInstance(folio)
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, editarFragment)
+                    .addToBackStack(null)
+                    .commit()
             }
         )
         binding.recyclerView.adapter = adapter
