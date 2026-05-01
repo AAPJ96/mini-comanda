@@ -3,10 +3,12 @@ package com.example.minicomanda.ui.comandas
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import com.example.minicomanda.data.local.entities.Comanda
 import com.example.minicomanda.data.local.entities.MenuItem
 import com.example.minicomanda.data.local.entities.PedidoDetalle
 import com.example.minicomanda.ui.menu.MenuViewModel
+
 
 class AgregarComandaViewModel(private val menuViewModel: MenuViewModel) : ViewModel() {
 
@@ -23,11 +25,15 @@ class AgregarComandaViewModel(private val menuViewModel: MenuViewModel) : ViewMo
     val observaciones: LiveData<String> = _observaciones
 
     // Lista de personas
-    private val _personas = MutableLiveData<List<String>>(listOf("Persona 1"))
-    val personas: LiveData<List<String>> = _personas
+    private val _personasCount = MutableLiveData(1) // mínimo 1 persona
+    val personasCount: LiveData<Int> = _personasCount
 
     private val _selectedPersonaIndex = MutableLiveData(0)
     val selectedPersonaIndex: LiveData<Int> = _selectedPersonaIndex
+
+    val personas: LiveData<List<String>> = _personasCount.map { count ->
+        (0 until count).map { "Persona ${it + 1}" }
+    }
 
     // Mapa: índice de persona -> (itemMenuId -> PedidoDetalle)
     private val _pedidosPorPersona = mutableMapOf<Int, MutableMap<Int, PedidoDetalle>>()
@@ -69,37 +75,37 @@ class AgregarComandaViewModel(private val menuViewModel: MenuViewModel) : ViewMo
     }
 
     fun agregarPersona() {
-        val current = _personas.value?.toMutableList() ?: return
-        val newIndex = current.size
-        current.add("Persona ${newIndex + 1}")
-        _personas.value = current
+        val currentCount = _personasCount.value ?: 1
+        val newIndex = currentCount
+        _personasCount.value = currentCount + 1
         _pedidosPorPersona[newIndex] = mutableMapOf()
-        // Seleccionar la nueva persona
         _selectedPersonaIndex.value = newIndex
+        // ya no se agrega a la lista de strings
         actualizarUi()
         recalcularTotales()
     }
 
     fun eliminarPersona(index: Int) {
-        val current = _personas.value?.toMutableList() ?: return
-        if (current.size == 1) return // al menos una persona debe existir
-        current.removeAt(index)
-        _personas.value = current
+        val currentCount = _personasCount.value ?: 1
+        if (currentCount == 1) return // mínimo 1 persona
 
-        // Reindexar mapa de pedidos (desplazar los índices mayores)
+        // Reindexar mapa de pedidos (como antes)
         val newPedidos = mutableMapOf<Int, MutableMap<Int, PedidoDetalle>>()
-        for (i in current.indices) {
+        for (i in 0 until currentCount - 1) { // nueva cantidad será currentCount - 1
             val oldKey = if (i < index) i else i + 1
             newPedidos[i] = _pedidosPorPersona[oldKey] ?: mutableMapOf()
         }
         _pedidosPorPersona.clear()
         _pedidosPorPersona.putAll(newPedidos)
 
-        // Ajustar selección
+        // Actualizar cantidad
+        _personasCount.value = currentCount - 1
+
+        // Ajustar selección (similar a antes)
         if (_selectedPersonaIndex.value == index) {
             _selectedPersonaIndex.value = if (index > 0) index - 1 else 0
-        } else if (_selectedPersonaIndex.value!! > index) {
-            _selectedPersonaIndex.value = _selectedPersonaIndex.value!! - 1
+        } else if ((_selectedPersonaIndex.value ?: 0) > index) {
+            _selectedPersonaIndex.value = (_selectedPersonaIndex.value ?: 0) - 1
         }
         actualizarUi()
         recalcularTotales()
@@ -126,7 +132,7 @@ class AgregarComandaViewModel(private val menuViewModel: MenuViewModel) : ViewMo
             // Crear nuevo detalle
             val nuevoDetalle = PedidoDetalle(
                 comandaId = 0,
-                persona = _personas.value!![personaIndex],
+                persona = "Persona ${personaIndex + 1}",  // ← generado al vuelo
                 itemMenuId = menuItem.id,
                 cantidad = 1,
                 precioUnitario = menuItem.precio,
@@ -189,19 +195,21 @@ class AgregarComandaViewModel(private val menuViewModel: MenuViewModel) : ViewMo
             paraLlevar = paraLlevar,
             total = total,
             pagado = false,
-            direccion = if (paraLlevar) observaciones else null // usamos observaciones como dirección temporal
+            direccion = if (paraLlevar) observaciones else null
         )
 
         val detalles = mutableListOf<PedidoDetalle>()
-        for ((personaIndex, pedidos) in _pedidosPorPersona) {
-            val nombrePersona = _personas.value!![personaIndex]
+        val count = _personasCount.value ?: 1
+        for (personaIndex in 0 until count) {
+            val nombrePersona = "Persona ${personaIndex + 1}" // generado al vuelo
+            val pedidos = _pedidosPorPersona[personaIndex] ?: continue
             for (detalle in pedidos.values) {
                 detalles.add(
                     detalle.copy(
                         id = 0,
                         comandaId = 0,
                         persona = nombrePersona,
-                        observaciones = null // podríamos permitir observaciones por item
+                        observaciones = null
                     )
                 )
             }

@@ -1,44 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<com.google.android.material.chip.Chip
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardPersona"
+    android:id="@+id/chipPersona"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
+    android:layout_marginHorizontal="6dp"
     android:layout_marginVertical="4dp"
-    app:cardCornerRadius="24dp"
-    app:cardElevation="2dp"
-    app:strokeWidth="2dp"
-    app:strokeColor="@android:color/transparent">
-
-    <LinearLayout
-        android:id="@+id/layoutPillContent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="6dp"
-        android:background="@null">   <!-- ¡cero fondo! -->
-
-        <TextView
-            android:id="@+id/tvPersonaNombre"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-            tools:text="Persona 1" />
-
-        <ImageButton
-            android:id="@+id/btnDelete"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:src="@drawable/ic_delete"
-            android:contentDescription="Eliminar persona"
-            android:background="@null" />
-    </LinearLayout>
-
-</com.google.android.material.card.MaterialCardView>
+    android:text="Persona 1"
+    android:textAppearance="?attr/textAppearanceBody2"
+    android:clickable="true"
+    android:focusable="true"
+    app:closeIconVisible="true"
+    app:chipCornerRadius="24dp"
+    app:chipBackgroundColor="@color/blue"
+    app:chipStrokeColor="@color/blue"
+    app:chipStrokeWidth="2dp"
+    android:textColor="@color/white"
+    app:closeIconTint="@color/white"
+    style="@style/Widget.MaterialComponents.Chip.Choice" />

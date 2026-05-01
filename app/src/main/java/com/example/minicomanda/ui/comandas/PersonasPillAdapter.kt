@@ -5,8 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minicomanda.R
 import com.example.minicomanda.databinding.ItemPersonaPillBinding
-import android.view.View
-import android.content.Context
 
 // PersonasPillAdapter.kt
 class PersonasPillAdapter(
@@ -28,51 +26,49 @@ class PersonasPillAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val context = holder.itemView.context
-        val isAddButton = position == personas.size
+        val chip = holder.binding.chipPersona
 
-        with(holder.binding) {
-            // Limpiar cualquier filtro previo
-            btnDelete.clearColorFilter()
+        if (position == personas.size) {
+            // Chip de "+"
+            chip.text = "+"
+            chip.isCloseIconVisible = false
+            chip.setOnClickListener { onAddClick() }
+            // Estilo no seleccionado (outline)
+            chip.setChipBackgroundColorResource(android.R.color.white)
+            chip.setChipStrokeColorResource(R.color.blue)
+            chip.setTextColor(context.getColor(R.color.blue))
+            chip.chipStrokeWidth = 2f
+            chip.isCheckable = false
+        } else {
+            // Chip de persona
+            val persona = personas[position]
+            chip.text = persona
+            chip.isCloseIconVisible = true
+            chip.isCheckable = true
 
-            if (isAddButton) {
-                tvPersonaNombre.text = "+"
-                btnDelete.visibility = View.GONE
-                root.setOnClickListener { onAddClick() }
+            // Listener de eliminar
+            chip.setOnCloseIconClickListener { onDeleteClick(position) }
+            // Listener de selección (al tocar la chip)
+            chip.setOnClickListener { onPersonaClick(position) }
 
-                // Estilo fijo: outline (blanco + borde azul)
-                cardPersona.setCardBackgroundColor(context.getColor(android.R.color.white))
-                cardPersona.strokeColor = context.getColor(R.color.blue)  // Int
-                cardPersona.strokeWidth = 2.dpToPx(context)
-                tvPersonaNombre.setTextColor(context.getColor(R.color.blue))
+            val isSelected = position == selectedIndex
+            if (isSelected) {
+                chip.isChecked = true  // activa el estado 'checked' y aplica colores definidos en el tema, pero los personalizamos abajo
+                chip.setChipBackgroundColorResource(R.color.blue)
+                chip.setChipStrokeColorResource(android.R.color.transparent)
+                chip.chipStrokeWidth = 0f
+                chip.setTextColor(context.getColor(android.R.color.white))
+                chip.setCloseIconTintResource(android.R.color.white)
             } else {
-                val persona = personas[position]
-                tvPersonaNombre.text = persona
-                btnDelete.visibility = View.VISIBLE
-                btnDelete.setOnClickListener { onDeleteClick(position) }
-                root.setOnClickListener { onPersonaClick(position) }
-
-                val isSelected = position == selectedIndex
-                if (isSelected) {
-                    // Fondo azul, sin borde
-                    cardPersona.setCardBackgroundColor(context.getColor(R.color.blue))
-                    cardPersona.strokeColor = 0  // o 0
-                    cardPersona.strokeWidth = 0
-                    tvPersonaNombre.setTextColor(context.getColor(android.R.color.white))
-                    btnDelete.setColorFilter(context.getColor(android.R.color.white))
-                } else {
-                    // Outline: blanco + borde azul
-                    cardPersona.setCardBackgroundColor(context.getColor(android.R.color.white))
-                    cardPersona.strokeColor = context.getColor(R.color.blue)
-                    cardPersona.strokeWidth = 2.dpToPx(context)
-                    tvPersonaNombre.setTextColor(context.getColor(R.color.blue))
-                    btnDelete.setColorFilter(context.getColor(R.color.blue))
-                }
+                chip.isChecked = false
+                chip.setChipBackgroundColorResource(android.R.color.white)
+                chip.setChipStrokeColorResource(R.color.blue)
+                chip.chipStrokeWidth = 2f
+                chip.setTextColor(context.getColor(R.color.blue))
+                chip.setCloseIconTintResource(R.color.blue)
             }
         }
     }
-
-    private fun Int.dpToPx(context: Context): Int =
-        (this * context.resources.displayMetrics.density).toInt()
 
     override fun getItemCount() = personas.size + 1
 
