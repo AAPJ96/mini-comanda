@@ -9,20 +9,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.minicomanda.databinding.FragmentAgregarComandaBinding
-import com.example.minicomanda.ui.menu.MenuViewModel
 import com.example.minicomanda.R
+import com.example.minicomanda.databinding.FragmentAgregarComandaBinding
 
 class AgregarComandaFragment : Fragment() {
 
     private var _binding: FragmentAgregarComandaBinding? = null
     private val binding get() = _binding!!
 
-    private val menuViewModel: MenuViewModel by activityViewModels()
-    private val agregarComandaViewModel: AgregarComandaViewModel by lazy {
-        AgregarComandaViewModel(menuViewModel)
-    }
+    // Ya no necesitamos MenuViewModel
+    private val agregarComandaViewModel: AgregarComandaViewModel by viewModels()
+    private val comandasViewModel: ComandasViewModel by activityViewModels()
 
     private lateinit var personasPillAdapter: PersonasPillAdapter
     private lateinit var personaOrderAdapter: PersonaOrderAdapter
@@ -72,7 +71,7 @@ class AgregarComandaFragment : Fragment() {
         personaOrderAdapter = PersonaOrderAdapter(
             personas = emptyList(),
             pedidosPorPersona = emptyMap(),
-            menuItems = emptyList(),
+            menuItems = emptyList(),   // antes decía itemMenus
             onIncrement = { personaIndex, menuItem ->
                 agregarComandaViewModel.incrementarItem(personaIndex, menuItem)
             },
@@ -95,11 +94,9 @@ class AgregarComandaFragment : Fragment() {
                 onDeleteClick = { index -> agregarComandaViewModel.eliminarPersona(index) }
             )
             binding.rvPersonasPills.adapter = personasPillAdapter
-            personasPillAdapter.notifyDataSetChanged()
         }
 
         agregarComandaViewModel.selectedPersonaIndex.observe(viewLifecycleOwner) { selectedIndex ->
-            // Actualizar adaptador de píldoras para reflejar selección
             personasPillAdapter = PersonasPillAdapter(
                 personas = agregarComandaViewModel.personas.value ?: emptyList(),
                 selectedIndex = selectedIndex,
@@ -108,18 +105,15 @@ class AgregarComandaFragment : Fragment() {
                 onDeleteClick = { index -> agregarComandaViewModel.eliminarPersona(index) }
             )
             binding.rvPersonasPills.adapter = personasPillAdapter
-            personasPillAdapter.notifyDataSetChanged()
-
-            // Auto-scroll para mostrar la píldora seleccionada
             binding.rvPersonasPills.smoothScrollToPosition(selectedIndex)
         }
 
+        // Observar el menú (ahora se llama menuItems, no itemsMenu)
         agregarComandaViewModel.menuItems.observe(viewLifecycleOwner) { items ->
             menuGridAdapter = MenuGridAdapter(items) { menuItem ->
                 agregarComandaViewModel.agregarItemAMenu(menuItem)
             }
             binding.rvMenuGrid.adapter = menuGridAdapter
-            menuGridAdapter.notifyDataSetChanged()
         }
 
         agregarComandaViewModel.pedidosPorPersonaUi.observe(viewLifecycleOwner) { pedidosMap ->
@@ -138,7 +132,6 @@ class AgregarComandaFragment : Fragment() {
                 }
             )
             binding.rvPedidosPersonas.adapter = personaOrderAdapter
-            personaOrderAdapter.notifyDataSetChanged()
         }
 
         agregarComandaViewModel.totalGeneral.observe(viewLifecycleOwner) { total ->
@@ -177,9 +170,8 @@ class AgregarComandaFragment : Fragment() {
 
         binding.btnGuardar.setOnClickListener {
             val (comanda, detalles) = agregarComandaViewModel.construirComanda()
-            val comandasViewModel: ComandasViewModel by activityViewModels()
-            comandasViewModel.addComanda(comanda, detalles)
-            Toast.makeText(requireContext(), "Comanda guardada con folio ${comanda.folio}", Toast.LENGTH_SHORT).show()
+            comandasViewModel.agregarComanda(comanda, detalles)   // antes era addComanda
+            Toast.makeText(requireContext(), "Comanda guardada con folio ${comanda.folio ?: "sin folio"}", Toast.LENGTH_SHORT).show()
             parentFragmentManager.popBackStack()
         }
     }

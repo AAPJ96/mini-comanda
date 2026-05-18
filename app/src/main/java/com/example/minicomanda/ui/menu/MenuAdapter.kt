@@ -3,17 +3,17 @@ package com.example.minicomanda.ui.menu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.PopupMenu
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minicomanda.R
-import com.example.minicomanda.data.local.entities.MenuItem
+import com.example.minicomanda.data.local.entities.ItemMenu
 import com.google.android.material.imageview.ShapeableImageView
 
 class MenuAdapter(
-    private var items: MutableList<MenuItem>,
-    private val onEditClick: (MenuItem) -> Unit,
-    private val onDeleteClick: (MenuItem) -> Unit
+    private var items: MutableList<ItemMenu>,
+    private val onEditClick: (ItemMenu) -> Unit,
+    private val onDeleteClick: (ItemMenu) -> Unit
 ) : RecyclerView.Adapter<MenuAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -30,20 +30,19 @@ class MenuAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         holder.tvName.text = item.nombre
-        holder.tvPrice.text = "$${"%.2f".format(item.precio)}"
+        // Convertir precio de centavos a moneda
+        holder.tvPrice.text = "$${"%.2f".format(item.precio / 100.0)}"
+        // Imagen placeholder (más adelante cargarás con Glide si hay imagen)
         holder.ivImage.setImageResource(R.drawable.placeholder)
 
-        // Al hacer clic en la card se muestra el menú contextual
         holder.itemView.setOnClickListener {
             showPopupMenu(holder.itemView, item)
         }
     }
 
-    private fun showPopupMenu(view: View, item: MenuItem) {
-        // Usamos el ContextThemeWrapper para aplicar el estilo al contexto antes de crear el Popup
+    private fun showPopupMenu(view: View, item: ItemMenu) {
         val wrapper = androidx.appcompat.view.ContextThemeWrapper(view.context, R.style.CustomPopupMenu)
         val popup = PopupMenu(wrapper, view)
-
         popup.menuInflater.inflate(R.menu.menu_item_options, popup.menu)
 
         popup.setOnMenuItemClickListener { menuItem ->
@@ -64,7 +63,7 @@ class MenuAdapter(
 
     override fun getItemCount() = items.size
 
-    fun updateList(newItems: List<MenuItem>) {
+    fun updateList(newItems: List<ItemMenu>) {
         items.clear()
         items.addAll(newItems)
         notifyDataSetChanged()
@@ -83,5 +82,5 @@ class MenuAdapter(
         notifyItemMoved(fromPosition, toPosition)
     }
 
-    fun getCurrentList(): List<MenuItem> = items
+    fun getCurrentList(): List<ItemMenu> = items
 }

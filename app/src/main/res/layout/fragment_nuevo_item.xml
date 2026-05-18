@@ -89,21 +89,58 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
         </LinearLayout>
 
-        <!-- Extras (modificadores) -->
+        <!-- Descripción -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_extras"
+                android:id="@+id/et_descripcion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Extras (ej. modificadores)"
+                android:hint="Descripción (opcional)"
                 android:minLines="2"
                 android:maxLines="4"/>
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Categoría -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_categoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Categoría (ej. Bebidas, Postres)"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Switch para modificador -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="¿Es descuento?"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/header_background"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_modificador"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
 
         <!-- Botones de acción -->
         <LinearLayout

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.example.minicomanda.data.local.entities.MenuItem
+import com.example.minicomanda.data.local.entities.ItemMenu
 import com.example.minicomanda.databinding.FragmentEditarItemBinding
 
 class EditarItemFragment : Fragment() {
@@ -17,10 +17,7 @@ class EditarItemFragment : Fragment() {
 
     private val menuViewModel: MenuViewModel by activityViewModels()
 
-    private var itemId: Int = 0
-    private var originalNombre: String = ""
-    private var originalPrecio: Double = 0.0
-    private var originalExtras: String? = null
+    private var itemOriginal: ItemMenu? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentEditarItemBinding.inflate(inflater, container, false)
@@ -30,64 +27,58 @@ class EditarItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Obtener el item de los argumentos
-        arguments?.let {
-            itemId = it.getInt("item_id", 0)
-            originalNombre = it.getString("item_nombre", "")
-            originalPrecio = it.getDouble("item_precio", 0.0)
-            originalExtras = it.getString("item_extras")
+        // Obtener el ítem de los argumentos (suponemos que se pasa como Serializable)
+        itemOriginal = arguments?.getSerializable("item") as? ItemMenu
+        if (itemOriginal == null) {
+            Toast.makeText(requireContext(), "Error al cargar el ítem", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.popBackStack()
+            return
         }
 
-        // Prellenar campos
-        binding.etNombre.setText(originalNombre)
-        binding.etPrecio.setText(String.format("%.2f", originalPrecio))
-        binding.etExtras.setText(originalExtras ?: "")
+        val item = itemOriginal!!
+        binding.etNombre.setText(item.nombre)
+        binding.etPrecio.setText(String.format("%.2f", item.precio / 100.0))
+        binding.etDescripcion.setText(item.descripcion ?: "")
+        binding.etCategoria.setText(item.categoria ?: "")
+        binding.switchModificador.isChecked = item.esModificador
 
-        // Botón guardar cambios
         binding.btnGuardar.setOnClickListener {
             val nuevoNombre = binding.etNombre.text.toString().trim()
             val precioStr = binding.etPrecio.text.toString().trim()
-            val nuevosExtras = binding.etExtras.text.toString().trim()
+            val nuevaDescripcion = binding.etDescripcion.text.toString().trim()
+            val nuevaCategoria = binding.etCategoria.text.toString().trim()
+            val esModificador = binding.switchModificador.isChecked
 
             if (nuevoNombre.isEmpty()) {
                 binding.etNombre.error = "El nombre es obligatorio"
                 return@setOnClickListener
             }
-            if (precioStr.isEmpty()) {
-                binding.etPrecio.error = "El precio es obligatorio"
+            val precioDouble = precioStr.toDoubleOrNull()
+            if (precioDouble == null || precioDouble <= 0) {
+                binding.etPrecio.error = "Ingresa un precio válido"
                 return@setOnClickListener
             }
+            val precioCentavos = (precioDouble * 100).toLong()
 
-            val nuevoPrecio = precioStr.toDoubleOrNull()
-            if (nuevoPrecio == null || nuevoPrecio <= 0) {
-                binding.etPrecio.error = "Ingresa un precio válido (ej. 25.50)"
-                return@setOnClickListener
-            }
-
-            // Crear el ítem actualizado (mantenemos el mismo id y foto)
-            val itemActualizado = MenuItem(
-                id = itemId,
+            val itemActualizado = item.copy(
                 nombre = nuevoNombre,
-                precio = nuevoPrecio,
-                foto = null, // más adelante se manejará la foto
-                extras = nuevosExtras
+                precio = precioCentavos,
+                descripcion = nuevaDescripcion.ifBlank { null },
+                categoria = nuevaCategoria.ifBlank { null },
+                esModificador = esModificador,
+                fechaModificacion = System.currentTimeMillis(),
+                sincronizado = false
             )
 
-            // Actualizar en ViewModel
-            menuViewModel.updateMenuItem(itemActualizado)
-
+            menuViewModel.actualizarItem(itemActualizado)
             Toast.makeText(requireContext(), "Item actualizado", Toast.LENGTH_SHORT).show()
-
-            // Regresar a la pantalla de menú
             parentFragmentManager.popBackStack()
         }
 
-        // Botón cancelar
         binding.btnCancelar.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
 
-        // Botón seleccionar foto (funcionalidad futura)
         binding.btnSeleccionarFoto.setOnClickListener {
             Toast.makeText(requireContext(), "Selección de foto (próximamente)", Toast.LENGTH_SHORT).show()
         }
@@ -99,13 +90,10 @@ class EditarItemFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(item: MenuItem): EditarItemFragment {
+        fun newInstance(item: ItemMenu): EditarItemFragment {
             val fragment = EditarItemFragment()
             val args = Bundle().apply {
-                putInt("item_id", item.id)
-                putString("item_nombre", item.nombre)
-                putDouble("item_precio", item.precio)
-                putString("item_extras", item.extras)
+                putSerializable("item", item)
             }
             fragment.arguments = args
             return fragment

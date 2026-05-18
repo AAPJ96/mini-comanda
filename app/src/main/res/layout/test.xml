@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/container_background"
-    tools:context=".ui.comandas.EditarComandaFragment"
     >
 
     <ScrollView
@@ -57,15 +56,12 @@
             <!-- 2. Nombre del cliente -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilNombreCliente"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 android:hint="Nombre del cliente"
-                app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/blue"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp">
+                app:boxStrokeColor="@color/blue">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etNombreCliente"
@@ -98,20 +94,21 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Columnas del menú" />
+                    android:text="Columnas: "
+                    android:textAppearance="?attr/textAppearanceBody1" />
 
                 <SeekBar
                     android:id="@+id/seekbarColumnas"
-                    android:layout_width="150dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:max="3"
                     android:progress="1" />
 
@@ -119,8 +116,8 @@
                     android:id="@+id/tvNumColumnas"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="2" />
+                    android:text="2"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- 5. Grid del menú -->
@@ -190,28 +187,15 @@
                 tools:listitem="@layout/item_persona_order" />
 
             <!-- 8. Total general -->
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvTotalGeneral"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:gravity="end"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Total: "
-                    android:textAppearance="?attr/textAppearanceTitleMedium" />
-
-                <TextView
-                    android:id="@+id/tvTotalGeneral"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="$0.00"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="@color/black" />
-            </LinearLayout>
+                android:layout_marginBottom="12dp"
+                android:textAlignment="viewEnd"
+                android:textAppearance="?attr/textAppearanceHeadline5"
+                android:textColor="@color/blue"
+                tools:text="$150.00" />
 
             <!-- 9. Observaciones / Dirección -->
             <com.google.android.material.textfield.TextInputLayout
@@ -244,8 +228,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="Marcar como pagado"
-                android:textColor="@color/blue"
-                app:strokeColor="@color/blue" />
+                android:textColor="@color/green_text"
+                app:strokeColor="@color/green_text" />
 
             <!-- 12. Botones Guardar / Cancelar -->
             <LinearLayout

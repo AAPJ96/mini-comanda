@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.minicomanda.R
@@ -27,14 +26,14 @@ class SalasFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Observar cambios en la sala actual
-        lobbyViewModel.currentLobby.observe(viewLifecycleOwner) { lobby ->
-            if (lobby != null) {
+        lobbyViewModel.currentSala.observe(viewLifecycleOwner) { sala ->
+            if (sala != null) {
                 // Mostrar información de la sala activa
                 binding.cardRoomInfo.visibility = View.VISIBLE
                 binding.layoutActions.visibility = View.GONE
 
-                binding.tvRoomIdValue.text = "ID: ${lobby.lobbyId}"
-                binding.tvRoomNameValue.text = "Nombre: ${lobby.lobbyName.takeIf { it.isNotEmpty() } ?: "Sin nombre"}"
+                binding.tvRoomIdValue.text = "ID: ${sala.id}"
+                binding.tvRoomNameValue.text = "Nombre: ${sala.nombre.ifBlank { "Sin nombre" }}"
             } else {
                 // Mostrar opciones de crear/unirse
                 binding.cardRoomInfo.visibility = View.GONE
@@ -62,13 +61,17 @@ class SalasFragment : Fragment() {
 
         // Botón Salir de sala
         binding.btnLeaveRoom.setOnClickListener {
-            lobbyViewModel.leaveLobby()
+            lobbyViewModel.salirDeSala()
             Toast.makeText(requireContext(), "Has salido de la sala", Toast.LENGTH_SHORT).show()
         }
 
         // Botón Editar sala (funcionalidad futura)
         binding.btnEditRoom.setOnClickListener {
-            Toast.makeText(requireContext(), "Funcionalidad en desarrollo", Toast.LENGTH_SHORT).show()
+            val editarFragment = EditarSalaFragment()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, editarFragment)
+                .addToBackStack(null)
+                .commit()
         }
     }
 

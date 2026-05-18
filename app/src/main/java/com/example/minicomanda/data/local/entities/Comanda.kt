@@ -1,19 +1,27 @@
 package com.example.minicomanda.data.local.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Date
 
 @Entity(tableName = "comandas")
 data class Comanda(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val folio: String,               // Ej: "C-001"
-    val fecha: Date,
-    val estado: String,              // "ACTIVA" o "CERRADA"
-    val nombreCliente: String,       // "Gorra azul" o "Rodolfo"
-    val paraLlevar: Boolean,         // true = para llevar, false = comer aquí
-    val direccion: String? = null,   // solo si paraLlevar
-    val total: Double,
-    val pagado: Boolean = false      // indica si ya se pagó
+    @PrimaryKey
+    val id: String,                    // UUID como texto
+    @ColumnInfo(name = "sala_id")
+    val salaId: String,
+    val folio: Int? = null,                 // folio como cadena (en servidor es BIGINT, aquí manejamos string para flexibilidad)
+    val comensal: String? = null,      // nombre del cliente
+    val personas: Int = 1,
+    @ColumnInfo(name = "es_para_llevar")
+    val esParaLlevar: Boolean = false,
+    val mesa: Int? = null,
+    val notas: String? = null,         // antes datos_entrega
+    val estado: String = "ACTIVO",     // ACTIVO, PAGADO, CANCELADA
+    @ColumnInfo(name = "fecha_creacion")
+    val fechaCreacion: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "fecha_modificacion")
+    val fechaModificacion: Long = System.currentTimeMillis(),
+    val activo: Boolean = true,
+    val sincronizado: Boolean = false
 )

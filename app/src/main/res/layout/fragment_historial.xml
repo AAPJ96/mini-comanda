@@ -1,15 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:background="@color/container_background"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.historial.HistorialFragment">
 
-    <TextView
-        android:id="@+id/textCenter"
-        android:layout_width="wrap_content"
+    <!-- Botones de alternancia -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Historial"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
 
-</FrameLayout>
+        <Button
+            android:id="@+id/btnResumen"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Resumen"
+            android:textColor="@color/blue"
+            app:strokeColor="@color/blue" />
+
+        <Button
+            android:id="@+id/btnComandasPagadas"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Comandas pagadas"
+            android:textColor="@color/blue"
+            app:strokeColor="@color/blue" />
+    </LinearLayout>
+
+    <!-- Contenedor de las dos vistas -->
+    <FrameLayout
+        android:id="@+id/containerHistorial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Vista Resumen -->
+        <ScrollView
+            android:id="@+id/layoutResumen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Dropdown de agrupación -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilAgrupacion"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Agrupar por"
+                    app:boxStrokeColor="@color/blue">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/spinnerAgrupacion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:text="Diario" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Tarjeta de resultados -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:id="@+id/resultadosContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Resultados"
+                            android:textAppearance="?attr/textAppearanceHeadline6"
+                            android:textColor="@color/blue" />
+
+                        <TextView
+                            android:id="@+id/tvDummyResultados"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Aquí se mostrará el resumen (totales, cantidad de comandas, platillos más pedidos...)"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                        <!-- Espacio para futuro contenido dinámico -->
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Vista Comandas Pagadas (RecyclerView) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerPagadas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:listitem="@layout/item_comanda" />
+    </FrameLayout>
+
+</LinearLayout>

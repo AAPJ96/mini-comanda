@@ -1,85 +1,102 @@
 package com.example.minicomanda.ui.comandas
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.map
+import com.example.minicomanda.MiniComandaApplication
 import com.example.minicomanda.data.local.entities.Comanda
-import com.example.minicomanda.data.local.entities.PedidoDetalle
-import java.util.*
+import com.example.minicomanda.data.local.entities.ItemComanda
+import com.example.minicomanda.data.local.entities.ComandaConItems
+import kotlinx.coroutines.launch
 
-class ComandasViewModel : ViewModel() {
-    private val _comandas = MutableLiveData<List<Comanda>>(emptyList())
-    val comandas: LiveData<List<Comanda>> = _comandas
+class ComandasViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _detalles = MutableLiveData<Map<Int, List<PedidoDetalle>>>(emptyMap())
-    val detalles: LiveData<Map<Int, List<PedidoDetalle>>> = _detalles
+    private val comandaDao by lazy { MiniComandaApplication.instance.comandaDao }
+    private val itemComandaDao by lazy { MiniComandaApplication.instance.itemComandaDao }
 
-    init {
-        loadDummyData()
+    private val salaId: String
+        get() {
+            val prefs = getApplication<MiniComandaApplication>()
+                .getSharedPreferences("minicomanda_prefs", android.content.Context.MODE_PRIVATE)
+            return prefs.getString("sala_id", "") ?: ""
+        }
+
+    // Lista de comandas con sus ítems
+    private val _comandasConItems: LiveData<List<ComandaConItems>> =
+        comandaDao.obtenerComandasConItems(salaId)
+
+    // Exponemos las comandas solas
+    val comandas: LiveData<List<Comanda>> = _comandasConItems.map { lista ->
+        lista.map { it.comanda }
     }
 
-    private fun loadDummyData() {
-        // Datos de ejemplo
-        val comanda1 = Comanda(
-            id = 1,
-            folio = "C-001",
-            fecha = Date(),
-            estado = "ACTIVA",
-            nombreCliente = "Gorra azul",
-            paraLlevar = false,
-            total = 204.0
-        )
-        val comanda2 = Comanda(
-            id = 2,
-            folio = "C-002",
-            fecha = Date(),
-            estado = "ACTIVA",
-            nombreCliente = "Rodolfo",
-            paraLlevar = true,
-            direccion = "Calle 123",
-            total = 75.0
-        )
-        _comandas.value = listOf(comanda1, comanda2)
-
-        val detallesMap = mutableMapOf<Int, List<PedidoDetalle>>()
-        detallesMap[1] = listOf(
-            PedidoDetalle(1, 1, "Persona 1", 1, 5, 25.0, null),
-            PedidoDetalle(2, 1, "Persona 1", 1, 1, 25.0, null),
-            PedidoDetalle(3, 1, "Persona 2", 2, 3, 18.0, "sin cebolla")
-        )
-        detallesMap[2] = listOf(
-            PedidoDetalle(4, 2, "Persona 1", 3, 3, 25.0, null)
-        )
-        _detalles.value = detallesMap
+    // Exponemos un mapa de (comandaId -> List<ItemComanda>) para el adaptador
+    val detalles: LiveData<Map<String, List<ItemComanda>>> = _comandasConItems.map { lista ->
+        lista.associate { it.comanda.id to it.items }
     }
 
-    fun addComanda(comanda: Comanda, detalles: List<PedidoDetalle>) {
-        // Simulación: agregar a la lista (más adelante se hará en Room)
-        val currentList = _comandas.value?.toMutableList() ?: mutableListOf()
-        val newId = (currentList.maxOfOrNull { it.id } ?: 0) + 1
-        val newComanda = comanda.copy(id = newId)
-        currentList.add(newComanda)
-        _comandas.value = currentList
+    private val _mensaje = MutableLiveData<String>()
+    val mensaje: LiveData<String> = _mensaje
 
-        val currentDetalles = _detalles.value?.toMutableMap() ?: mutableMapOf()
-        val nuevosDetalles = detalles.map { it.copy(id = 0, comandaId = newId) }
-        currentDetalles[newId] = nuevosDetalles
-        _detalles.value = currentDetalles
+    /** Agregar una nueva comanda (creada desde AgregarComandaFragment) */
+    fun agregarComanda(comanda: Comanda, items: List<ItemComanda>) {
+        viewModelScope.launch {
+            // Asignar sala activa y sincronizado = false
+            val nuevaComanda = comanda.copy(
+                salaId = salaId,
+                sincronizado = false,
+                fechaCreacion = System.currentTimeMillis(),
+                fechaModificacion = System.currentTimeMillis()
+            )
+            comandaDao.insertar(nuevaComanda)
+
+            // Insertar cada ítem de la comanda
+            items.forEach { item ->
+                itemComandaDao.insertar(
+                    item.copy(
+                        comandaId = nuevaComanda.id,
+                        sincronizado = false,
+                        fechaCreacion = System.currentTimeMillis(),
+                        fechaModificacion = System.currentTimeMillis()
+                    )
+                )
+            }
+            _mensaje.postValue("Comanda ${comanda.folio ?: ""} guardada")
+        }
     }
 
-    fun deleteComanda(comanda: Comanda) {
-        val currentList = _comandas.value?.toMutableList() ?: return
-        currentList.removeAll { it.id == comanda.id }
-        _comandas.value = currentList
+    /** Actualizar comanda existente (desde EditarComandaFragment) */
+    fun actualizarComanda(comanda: Comanda, items: List<ItemComanda>) {
+        viewModelScope.launch {
+            val actualizada = comanda.copy(
+                fechaModificacion = System.currentTimeMillis(),
+                sincronizado = false
+            )
+            comandaDao.actualizar(actualizada)
 
-        val currentDetalles = _detalles.value?.toMutableMap() ?: return
-        currentDetalles.remove(comanda.id)
-        _detalles.value = currentDetalles
+            // Para simplificar, eliminamos los ítems antiguos y volvemos a insertar los nuevos
+            itemComandaDao.eliminarTodosDeComanda(comanda.id, System.currentTimeMillis())
+            items.forEach { item ->
+                itemComandaDao.insertar(
+                    item.copy(
+                        comandaId = comanda.id,
+                        fechaModificacion = System.currentTimeMillis(),
+                        sincronizado = false
+                    )
+                )
+            }
+            _mensaje.postValue("Comanda actualizada")
+        }
     }
 
-    fun updateComanda(comanda: Comanda, detalles: List<PedidoDetalle>) {
-        // Eliminar la antigua y agregar la nueva
-        deleteComanda(comanda)
-        addComanda(comanda, detalles)
+    /** Cancelar (eliminación lógica) */
+    fun cancelarComanda(comandaId: String) {
+        viewModelScope.launch {
+            comandaDao.cancelar(comandaId, System.currentTimeMillis())
+            _mensaje.postValue("Comanda cancelada")
+        }
     }
 }

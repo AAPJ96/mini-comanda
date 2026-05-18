@@ -4,13 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.minicomanda.R
-import com.example.minicomanda.data.local.entities.Comanda
-import com.example.minicomanda.data.local.entities.PedidoDetalle
 import com.example.minicomanda.databinding.FragmentComandasBinding
 
 class ComandasFragment : Fragment() {
@@ -21,9 +18,6 @@ class ComandasFragment : Fragment() {
     private val viewModel: ComandasViewModel by viewModels()
     private lateinit var adapter: ComandasAdapter
 
-    var currentComandas: List<Comanda>? = null
-    var currentDetalles: Map<Int, List<PedidoDetalle>>? = null
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentComandasBinding.inflate(inflater, container, false)
         return binding.root
@@ -32,14 +26,12 @@ class ComandasFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Configurar RecyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = ComandasAdapter(
             comandas = emptyList(),
             detallesPorComanda = emptyMap(),
             onEditClick = { comanda ->
-                val folio = comanda.folio
-                val editarFragment = EditarComandaFragment.newInstance(folio)
+                val editarFragment = EditarComandaFragment.newInstance(comanda.id)
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.container, editarFragment)
                     .addToBackStack(null)
@@ -48,22 +40,16 @@ class ComandasFragment : Fragment() {
         )
         binding.recyclerView.adapter = adapter
 
-        // Observar datos
+        // Observar comandas y detalles y actualizar el adaptador cuando cualquiera cambie
         viewModel.comandas.observe(viewLifecycleOwner) { comandas ->
-            currentComandas = comandas
-            // Enviamos las comandas y usamos los detalles actuales o un mapa vacío si aún no llegan
-            adapter.updateData(comandas, currentDetalles ?: emptyMap())
+            adapter.updateData(comandas, viewModel.detalles.value ?: emptyMap())
         }
 
         viewModel.detalles.observe(viewLifecycleOwner) { detalles ->
-            currentDetalles = detalles
-            // Enviamos los detalles y usamos las comandas actuales o una lista vacía
-            adapter.updateData(currentComandas ?: emptyList(), detalles)
+            adapter.updateData(viewModel.comandas.value ?: emptyList(), detalles)
         }
 
-        // FAB para agregar
         binding.fabAdd.setOnClickListener {
-            // Reemplazar el Toast por la navegación
             val agregarFragment = AgregarComandaFragment()
             parentFragmentManager.beginTransaction()
                 .replace(R.id.container, agregarFragment)

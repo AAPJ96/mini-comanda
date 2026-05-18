@@ -9,17 +9,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.minicomanda.R
 import com.example.minicomanda.databinding.FragmentEditarComandaBinding
-import com.example.minicomanda.ui.menu.MenuViewModel
 
 class EditarComandaFragment : Fragment() {
 
     private var _binding: FragmentEditarComandaBinding? = null
     private val binding get() = _binding!!
 
-    private val menuViewModel: MenuViewModel by activityViewModels()
+    // El ViewModel se crea usando una factory que recibe el ID de la comanda
     private lateinit var viewModel: EditarComandaViewModel
     private val comandasViewModel: ComandasViewModel by activityViewModels()
 
@@ -30,8 +31,15 @@ class EditarComandaFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val folio = arguments?.getString("folio") ?: return
-        viewModel = EditarComandaViewModel(menuViewModel, folio)
+
+        // Obtenemos el ID de la comanda de los argumentos
+        val comandaId = arguments?.getString("comanda_id") ?: return
+
+        // Inicializamos el ViewModel con la factory adecuada
+        viewModel = ViewModelProvider(
+            this,
+            EditarComandaViewModel.Factory(requireActivity().application, comandaId)
+        ).get(EditarComandaViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -46,18 +54,14 @@ class EditarComandaFragment : Fragment() {
         binding.tvFolio.text = "Folio: ${viewModel.folio}"
         binding.tvEstado.text = "Estado: ${viewModel.estado.value}"
 
-        // Acciones especiales
-        binding.btnCerrarCuenta.setOnClickListener {
-            viewModel.cerrarCuenta()
-            binding.tvEstado.text = "Estado: CERRADA"
-            Toast.makeText(requireContext(), "Cuenta cerrada", Toast.LENGTH_SHORT).show()
-        }
+        // Botón marcar pagado
         binding.btnMarcarPagado.setOnClickListener {
             viewModel.marcarPagado()
-            Toast.makeText(requireContext(), "Marcado como pagado", Toast.LENGTH_SHORT).show()
+            binding.tvEstado.text = "Estado: PAGADA"
+            Toast.makeText(requireContext(), "Comanda marcada como pagada", Toast.LENGTH_SHORT).show()
         }
 
-        // Pills de personas
+        // Píldoras de personas
         personasPillAdapter = PersonasPillAdapter(
             personas = emptyList(),
             selectedIndex = 0,
@@ -67,7 +71,7 @@ class EditarComandaFragment : Fragment() {
         )
         binding.rvPersonasPills.adapter = personasPillAdapter
 
-        // Grid menú
+        // Grid del menú
         gridLayoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvMenuGrid.layoutManager = gridLayoutManager
         menuGridAdapter = MenuGridAdapter(emptyList()) { menuItem ->
@@ -92,7 +96,7 @@ class EditarComandaFragment : Fragment() {
         personaOrderAdapter = PersonaOrderAdapter(
             personas = emptyList(),
             pedidosPorPersona = emptyMap(),
-            menuItems = emptyList(),
+            menuItems = emptyList(),   // corregido: menuItems en lugar de itemMenus
             onIncrement = { personaIndex, menuItem -> viewModel.incrementarItem(personaIndex, menuItem) },
             onDecrement = { personaIndex, menuItem -> viewModel.decrementarItem(personaIndex, menuItem) },
             onDeletePersona = { index -> viewModel.eliminarPersona(index) }
@@ -123,6 +127,7 @@ class EditarComandaFragment : Fragment() {
             binding.rvPersonasPills.smoothScrollToPosition(selectedIndex)
         }
 
+        // Observar el menú (se llama menuItems)
         viewModel.menuItems.observe(viewLifecycleOwner) { items ->
             menuGridAdapter = MenuGridAdapter(items) { menuItem ->
                 viewModel.agregarItemAMenu(menuItem)
@@ -134,7 +139,7 @@ class EditarComandaFragment : Fragment() {
             personaOrderAdapter = PersonaOrderAdapter(
                 personas = viewModel.personas.value ?: emptyList(),
                 pedidosPorPersona = pedidosMap,
-                menuItems = viewModel.menuItems.value ?: emptyList(),
+                menuItems = viewModel.menuItems.value ?: emptyList(),  // corregido
                 onIncrement = { personaIndex, menuItem -> viewModel.incrementarItem(personaIndex, menuItem) },
                 onDecrement = { personaIndex, menuItem -> viewModel.decrementarItem(personaIndex, menuItem) },
                 onDeletePersona = { index -> viewModel.eliminarPersona(index) }
@@ -146,6 +151,7 @@ class EditarComandaFragment : Fragment() {
             binding.tvTotalGeneral.text = "Total: $${"%.2f".format(total)}"
         }
 
+        // Nombre cliente
         binding.etNombreCliente.setText(viewModel.nombreCliente.value)
         binding.etNombreCliente.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -155,11 +161,13 @@ class EditarComandaFragment : Fragment() {
             }
         })
 
+        // Tipo de pedido
         binding.rgTipoPedido.check(if (viewModel.paraLlevar.value == true) R.id.rb_para_llevar else R.id.rb_comer_aqui)
         binding.rgTipoPedido.setOnCheckedChangeListener { _, checkedId ->
             viewModel.setParaLlevar(checkedId == R.id.rb_para_llevar)
         }
 
+        // Observaciones
         binding.etObservaciones.setText(viewModel.observaciones.value)
         binding.etObservaciones.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -169,13 +177,15 @@ class EditarComandaFragment : Fragment() {
             }
         })
 
+        // Botones
         binding.btnCancelar.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
 
         binding.btnGuardar.setOnClickListener {
-            // TODO: Implementar guardado real cuando la BD esté lista
-            Toast.makeText(requireContext(), "Cambios guardados (simulación)", Toast.LENGTH_SHORT).show()
+            val (comanda, detalles) = viewModel.construirComandaActualizada()
+            comandasViewModel.actualizarComanda(comanda, detalles)
+            Toast.makeText(requireContext(), "Comanda actualizada", Toast.LENGTH_SHORT).show()
             parentFragmentManager.popBackStack()
         }
     }
@@ -186,9 +196,9 @@ class EditarComandaFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(folio: String): EditarComandaFragment {
+        fun newInstance(comandaId: String): EditarComandaFragment {
             val fragment = EditarComandaFragment()
-            val args = Bundle().apply { putString("folio", folio) }
+            val args = Bundle().apply { putString("comanda_id", comandaId) }
             fragment.arguments = args
             return fragment
         }

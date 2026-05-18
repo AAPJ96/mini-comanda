@@ -59,15 +59,14 @@ class MainActivity : AppCompatActivity() {
             } ?: false
         }
 
-        lobbyViewModel.currentLobby.observe(this) { lobby ->
-            val roomText = if (lobby != null) "Sala: ${lobby.lobbyId}" else "Sala: ---"
+        // Observar la sala actual
+        lobbyViewModel.currentSala.observe(this) { sala ->
+            val roomText = if (sala != null) "Sala: ${sala.id}" else "Sala: ---"
             binding.tvRoomId.text = roomText
         }
     }
 
-    /**
-     * Centraliza la lógica de cambio de fragmento y título
-     */
+    /** Centraliza la lógica de cambio de fragmento y título */
     private fun navigateToSection(fragment: Fragment, title: String) {
         loadFragment(fragment)
         updateSectionTitle(title)
@@ -75,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out) // Opcional: añade una transición suave
+            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             .replace(R.id.container, fragment)
             .commit()
     }

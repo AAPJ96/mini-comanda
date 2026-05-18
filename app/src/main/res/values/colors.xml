@@ -5,6 +5,9 @@
     <color name="gray">#2A2A2A</color>
     <color name="blue">#487ab6</color>
     <color name="red">#fe574f</color>
+    <color name="green">#4CAF50</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="orange">#FF9800</color>
 
     <!-- Mis colores -->
     <color name="header_background">#487ab6</color>
@@ -16,4 +19,7 @@
     <color name="bottom_nav_selected_background">#FFFFFF</color>
     <color name="container_background">#e8e8e4</color>
     <color name="active_green">#6ec531</color>
+    <color name="html_gray">#C0C0C0</color>
+    <color name="green_text">#0B5E0B</color>
+    <color name="soft_green">#E6F7E6</color>
 </resources>

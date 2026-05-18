@@ -7,11 +7,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.minicomanda.ui.menu.MenuAdapter
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minicomanda.R
-import com.example.minicomanda.data.local.entities.MenuItem
+import com.example.minicomanda.data.local.entities.ItemMenu
 import com.example.minicomanda.databinding.FragmentMenuBinding
 
 class MenuFragment : Fragment() {
@@ -30,11 +29,9 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Configurar adaptador
         adapter = MenuAdapter(
             items = mutableListOf(),
             onEditClick = { item ->
-                // AQUÍ VA TU CÓDIGO DE NAVEGACIÓN [cite: 44]
                 val editFragment = EditarItemFragment.newInstance(item)
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.container, editFragment)
@@ -46,8 +43,7 @@ class MenuFragment : Fragment() {
                     .setTitle("Eliminar item")
                     .setMessage("¿Estás seguro de eliminar ${item.nombre}?")
                     .setPositiveButton("Eliminar") { _, _ ->
-                        // Eliminar del ViewModel
-                        viewModel.removeMenuItem(item)
+                        viewModel.eliminarItem(item)
                         Toast.makeText(requireContext(), "Item eliminado", Toast.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("Cancelar", null)
@@ -56,20 +52,13 @@ class MenuFragment : Fragment() {
         )
         binding.recyclerView.adapter = adapter
 
-        // Observar cambios en la lista
         viewModel.menuItems.observe(viewLifecycleOwner) { items ->
             adapter.updateList(items)
         }
 
-        // Cargar datos iniciales si está vacío
-        if (viewModel.menuItems.value.isNullOrEmpty()) {
-            loadDummyData()
-        }
-
-        // Configurar drag & drop
+        // Drag & drop
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            0
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
         ) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -78,7 +67,8 @@ class MenuFragment : Fragment() {
             ): Boolean {
                 val fromPos = viewHolder.adapterPosition
                 val toPos = target.adapterPosition
-                viewModel.moveItem(fromPos, toPos)
+                viewModel.moverItem(fromPos, toPos)
+                adapter.moveItem(fromPos, toPos)
                 return true
             }
 
@@ -86,7 +76,6 @@ class MenuFragment : Fragment() {
         })
         itemTouchHelper.attachToRecyclerView(binding.recyclerView)
 
-        // FAB para agregar
         binding.fabAdd.setOnClickListener {
             val newItemFragment = NuevoItemFragment()
             parentFragmentManager.beginTransaction()
@@ -94,16 +83,6 @@ class MenuFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-    }
-
-    private fun loadDummyData() {
-        val dummyList = listOf(
-            MenuItem(1, "Taco Carne Maíz", 25.0),
-            MenuItem(2, "Taco Carne Harina", 35.0),
-            MenuItem(3, "Taco Papa Maiz", 30.0),
-            MenuItem(4, "Taco Papa Harina", 45.0)
-        )
-        viewModel.setMenuItems(dummyList)
     }
 
     override fun onDestroyView() {

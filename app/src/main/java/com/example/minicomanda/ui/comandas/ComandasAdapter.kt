@@ -8,14 +8,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minicomanda.R
 import com.example.minicomanda.data.local.entities.Comanda
-import com.example.minicomanda.data.local.entities.PedidoDetalle
+import com.example.minicomanda.data.local.entities.ItemComanda
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ComandasAdapter(
     private var comandas: List<Comanda>,
-    private var detallesPorComanda: Map<Int, List<PedidoDetalle>>,
-    private val onEditClick: (Comanda) -> Unit
+    private var detallesPorComanda: Map<String, List<ItemComanda>>,  // clave UUID comanda
+    private val onEditClick: (Comanda) -> Unit,
+    private val mostrarEditar: Boolean = true
 ) : RecyclerView.Adapter<ComandasAdapter.ViewHolder>() {
 
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
@@ -39,28 +40,20 @@ class ComandasAdapter(
         val comanda = comandas[position]
         val detalles = detallesPorComanda[comanda.id] ?: emptyList()
 
-        holder.tvFolio.text = comanda.folio
-        holder.tvFecha.text = dateFormat.format(comanda.fecha)
+        holder.tvFolio.text = comanda.folio?.toString() ?: "Sin folio"
+        holder.tvFecha.text = dateFormat.format(Date(comanda.fechaCreacion))
         holder.tvEstado.text = comanda.estado
-        holder.tvCliente.text = comanda.nombreCliente
-        holder.tvTipoPedido.text = if (comanda.paraLlevar) "Para llevar" else "Comer aquí"
+        holder.tvCliente.text = comanda.comensal ?: ""
+        holder.tvTipoPedido.text = if (comanda.esParaLlevar) "Para llevar" else "Comer aquí"
 
-        // Limpiar y construir detalles dinámicamente
         holder.layoutDetalles.removeAllViews()
         buildDetalleView(holder.layoutDetalles, comanda, detalles)
 
+        holder.btnEditar.visibility = if (mostrarEditar) View.VISIBLE else View.GONE
         holder.btnEditar.setOnClickListener { onEditClick(comanda) }
     }
 
-    override fun getItemCount() = comandas.size
-
-    fun updateData(newComandas: List<Comanda>, newDetalles: Map<Int, List<PedidoDetalle>>) {
-        comandas = newComandas
-        detallesPorComanda = newDetalles
-        notifyDataSetChanged()
-    }
-
-    private fun buildDetalleView(parent: LinearLayout, comanda: Comanda, detalles: List<PedidoDetalle>) {
+    private fun buildDetalleView(parent: LinearLayout, comanda: Comanda, detalles: List<ItemComanda>) {
         if (detalles.isEmpty()) {
             val tvEmpty = TextView(parent.context).apply {
                 text = "Sin detalles"
@@ -71,59 +64,49 @@ class ComandasAdapter(
         }
 
         // Agrupar por persona
-        val personas = detalles.groupBy { it.persona }
-        for ((persona, items) in personas) {
+        val porPersona = detalles.groupBy { it.persona }
+        for ((persona, items) in porPersona) {
             val personaLayout = LayoutInflater.from(parent.context).inflate(R.layout.item_persona, parent, false) as LinearLayout
             val tvPersonaNombre = personaLayout.findViewById<TextView>(R.id.tv_persona_nombre)
             val tvPersonaSubtotal = personaLayout.findViewById<TextView>(R.id.tv_persona_subtotal)
             val layoutItems = personaLayout.findViewById<LinearLayout>(R.id.layout_items)
 
-            val subtotal = items.sumOf { it.cantidad * it.precioUnitario }
-            tvPersonaNombre.text = persona
-            tvPersonaSubtotal.text = "$${"%.2f".format(subtotal)}"
+            val subtotalCentavos = items.sumOf { it.cantidad * it.precioOriginalUnidad }
+            tvPersonaNombre.text = "Persona $persona"
+            tvPersonaSubtotal.text = "$${"%.2f".format(subtotalCentavos / 100.0)}"
 
-            // Agregar items de esta persona
             for (item in items) {
                 val itemLayout = LayoutInflater.from(parent.context).inflate(R.layout.item_detalle, layoutItems, false)
-
-                // Referencias a los componentes según tu nuevo XML
                 val tvCantidad = itemLayout.findViewById<TextView>(R.id.tv_cantidad)
-                val tvNombre = itemLayout.findViewById<TextView>(R.id.tv_nombre) // Este ahora incluye el precio
+                val tvNombre = itemLayout.findViewById<TextView>(R.id.tv_nombre)
                 val tvTotal = itemLayout.findViewById<TextView>(R.id.tv_total)
 
-                // 1. Asignar la cantidad
                 tvCantidad.text = "${item.cantidad} x"
-
-                // 2. Combinar nombre y precio unitario en el mismo TextView
-                val nombreProducto = getItemNombre(item.itemMenuId)
-                val precioFormateado = "($${"%.2f".format(item.precioUnitario)})"
-                tvNombre.text = "$nombreProducto $precioFormateado"
-
-                // 3. Asignar el total de ese renglón
-                tvTotal.text = "$${"%.2f".format(item.cantidad * item.precioUnitario)}"
+                // Necesitamos el nombre del ítem del menú, pero solo tenemos itemMenuId.
+                // Por ahora, usamos un placeholder. Luego podemos mejorarlo con una relación.
+                val nombreItem = "Ítem ${item.itemMenuId}"  // o un mapa temporal
+                tvNombre.text = "$nombreItem ($${"%.2f".format(item.precioOriginalUnidad / 100.0)})"
+                tvTotal.text = "$${"%.2f".format(item.cantidad * item.precioOriginalUnidad / 100.0)}"
 
                 layoutItems.addView(itemLayout)
             }
-
             parent.addView(personaLayout)
         }
 
-        val totalGeneral = detalles.sumOf { it.cantidad * it.precioUnitario }
-        if (totalGeneral > 0) {
-            val totalView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_total_row, parent, false)
+        val totalGeneralCentavos = detalles.sumOf { it.cantidad * it.precioOriginalUnidad }
+        if (totalGeneralCentavos > 0) {
+            val totalView = LayoutInflater.from(parent.context).inflate(R.layout.item_total_row, parent, false)
             val tvTotalValue = totalView.findViewById<TextView>(R.id.tv_total_value)
-            tvTotalValue.text = "$${"%.2f".format(totalGeneral)}"
+            tvTotalValue.text = "$${"%.2f".format(totalGeneralCentavos / 100.0)}"
             parent.addView(totalView)
         }
     }
 
-    private fun getItemNombre(itemMenuId: Int): String {
-        return mapOf(
-            1 to "Taco Carne Maíz",
-            2 to "Taco Carne Harina",
-            3 to "Taco Papa Maíz",
-            4 to "Taco Papa Harina"
-        )[itemMenuId] ?: "Item $itemMenuId"
+    override fun getItemCount() = comandas.size
+
+    fun updateData(newComandas: List<Comanda>, newDetalles: Map<String, List<ItemComanda>>) {
+        comandas = newComandas
+        detallesPorComanda = newDetalles
+        notifyDataSetChanged()
     }
 }
