@@ -25,18 +25,33 @@ class ComandasViewModel(application: Application) : AndroidViewModel(application
             return prefs.getString("sala_id", "") ?: ""
         }
 
-    // Lista de comandas con sus ítems
+    // Lista original directa desde la base de datos
     private val _comandasConItems: LiveData<List<ComandaConItems>> =
         comandaDao.obtenerComandasConItems(salaId)
 
-    // Exponemos las comandas solas
-    val comandas: LiveData<List<Comanda>> = _comandasConItems.map { lista ->
+    // NUEVO: Capa intermedia de filtrado reactivo
+    private val _comandasFiltradasUi: LiveData<List<ComandaConItems>> = _comandasConItems.map { lista ->
+        lista.filter { conItems ->
+            val estadoComanda = conItems.comanda.estado
+
+            // Condición A: Mostrar siempre si está ACTIVA
+            val esActiva = estadoComanda == "ACTIVO"
+
+            // Condición B: Si está PAGADA, mostrar solo si hay ítems que NO están listos
+            val esPagadaPeroPendiente = estadoComanda == "PAGADO" &&
+                    conItems.items.any { it.itemComanda.estado != "LISTO" }
+
+            esActiva || esPagadaPeroPendiente
+        }
+    }
+
+    // Exponemos las comandas solas, alimentadas de la lista ya filtrada
+    val comandas: LiveData<List<Comanda>> = _comandasFiltradasUi.map { lista ->
         lista.map { it.comanda }
     }
 
-    // Exponemos un mapa de (comandaId -> List<ItemComanda>) para el adaptador
-// AHORA:
-    val detalles: LiveData<Map<String, List<ItemComandaConMenu>>> = _comandasConItems.map { lista ->
+    // Exponemos el mapa de detalles, alimentado de la lista ya filtrada
+    val detalles: LiveData<Map<String, List<ItemComandaConMenu>>> = _comandasFiltradasUi.map { lista ->
         lista.associate { it.comanda.id to it.items }
     }
 

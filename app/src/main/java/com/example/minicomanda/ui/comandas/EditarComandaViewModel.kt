@@ -224,7 +224,8 @@ class EditarComandaViewModel(application: Application, private val comandaId: St
         val comanda = original.copy(
             comensal = nombreCliente,
             esParaLlevar = paraLlevar,
-            notas = if (paraLlevar) observaciones else null,
+            // CORRECCIÓN: Guardamos las notas siempre. Si está en blanco, mandamos null.
+            notas = observaciones.ifBlank { null },
             personas = _personasCount.value ?: 1,
             estado = _estado.value ?: "ACTIVO",
             fechaModificacion = System.currentTimeMillis(),

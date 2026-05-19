@@ -42,7 +42,7 @@ class HistorialViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun cargarHistorial() {
         viewModelScope.launch {
-            val todasConItems = comandaDao.obtenerComandasConItemsSync(salaId)
+            val todasConItems = comandaDao.obtenerComandasConItemsDescSync(salaId)
             // Guardamos solo las pagadas
             cacheComandasConItems = todasConItems.filter { it.comanda.estado == "PAGADO" }
 

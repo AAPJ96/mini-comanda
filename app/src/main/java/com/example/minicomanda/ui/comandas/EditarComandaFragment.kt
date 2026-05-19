@@ -56,10 +56,26 @@ class EditarComandaFragment : Fragment() {
         binding.tvEstado.text = "Estado: ${viewModel.estado.value}"
 
         // Botón marcar pagado
+        // Botón marcar pagado con Dialog de confirmación y autoguardado
         binding.btnMarcarPagado.setOnClickListener {
-            viewModel.marcarPagado()
-            binding.tvEstado.text = "Estado: PAGADA"
-            Toast.makeText(requireContext(), "Comanda marcada como pagada", Toast.LENGTH_SHORT).show()
+            AlertDialog.Builder(requireContext())
+                .setTitle("Comanda pagada")
+                .setMessage("¿Estás seguro de marcar esta orden como PAGADA?")
+                .setPositiveButton("Sí") { _, _ ->
+                    // 1. Actualizamos el estado internamente en el ViewModel
+                    viewModel.marcarPagado()
+
+                    // 2. Disparamos la misma lógica del botón "Guardar"
+                    val (comanda, detalles) = viewModel.construirComandaActualizada()
+                    comandasViewModel.actualizarComanda(comanda, detalles)
+
+                    Toast.makeText(requireContext(), "Comanda cobrada y guardada", Toast.LENGTH_SHORT).show()
+
+                    // 3. Salimos a la lista
+                    parentFragmentManager.popBackStack()
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
         }
 
         // Píldoras de personas
@@ -153,7 +169,13 @@ class EditarComandaFragment : Fragment() {
         }
 
         // Nombre cliente
-        binding.etNombreCliente.setText(viewModel.nombreCliente.value)
+        viewModel.nombreCliente.observe(viewLifecycleOwner) { nombre ->
+            // Verificamos que sea diferente para evitar un loop infinito con el TextWatcher
+            if (binding.etNombreCliente.text.toString() != nombre) {
+                binding.etNombreCliente.setText(nombre)
+            }
+        }
+
         binding.etNombreCliente.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -163,13 +185,25 @@ class EditarComandaFragment : Fragment() {
         })
 
         // Tipo de pedido
-        binding.rgTipoPedido.check(if (viewModel.paraLlevar.value == true) R.id.rb_para_llevar else R.id.rb_comer_aqui)
+        viewModel.paraLlevar.observe(viewLifecycleOwner) { paraLlevar ->
+            val expectedId = if (paraLlevar == true) R.id.rb_para_llevar else R.id.rb_comer_aqui
+            if (binding.rgTipoPedido.checkedRadioButtonId != expectedId) {
+                binding.rgTipoPedido.check(expectedId)
+            }
+        }
+
         binding.rgTipoPedido.setOnCheckedChangeListener { _, checkedId ->
             viewModel.setParaLlevar(checkedId == R.id.rb_para_llevar)
         }
 
         // Observaciones
-        binding.etObservaciones.setText(viewModel.observaciones.value)
+        viewModel.observaciones.observe(viewLifecycleOwner) { notas ->
+            // Verificamos que sea diferente para evitar loops con el TextWatcher
+            if (binding.etObservaciones.text.toString() != notas) {
+                binding.etObservaciones.setText(notas)
+            }
+        }
+
         binding.etObservaciones.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -177,7 +211,6 @@ class EditarComandaFragment : Fragment() {
                 viewModel.setObservaciones(s.toString())
             }
         })
-
 
         viewModel.mensaje.observe(viewLifecycleOwner) { msg ->
             if (!msg.isNullOrEmpty()) {

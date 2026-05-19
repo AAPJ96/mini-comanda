@@ -49,6 +49,10 @@ interface ComandaDao {
     suspend fun obtenerComandasConItemsSync(salaId: String): List<ComandaConItems>
 
     @Transaction
+    @Query("SELECT * FROM comandas WHERE sala_id = :salaId AND activo = 1 ORDER BY fecha_creacion DESC")
+    suspend fun obtenerComandasConItemsDescSync(salaId: String): List<ComandaConItems>
+
+    @Transaction
     @Query("SELECT * FROM comandas WHERE sala_id = :salaId AND estado = 'PAGADO' AND activo = 1 ORDER BY fecha_creacion DESC")
     fun obtenerComandasPagadasConItems(salaId: String): LiveData<List<ComandaConItems>>
 }

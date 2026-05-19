@@ -27,6 +27,8 @@ class ComandasAdapter(
         val tvEstado: TextView = itemView.findViewById(R.id.tv_estado)
         val tvCliente: TextView = itemView.findViewById(R.id.tv_cliente)
         val tvTipoPedido: TextView = itemView.findViewById(R.id.tv_tipo_pedido)
+
+        val tvNotas: TextView = itemView.findViewById(R.id.tv_notas)
         val layoutDetalles: LinearLayout = itemView.findViewById(R.id.layout_detalles)
         val btnEditar: View = itemView.findViewById(R.id.btn_editar)
     }
@@ -45,6 +47,14 @@ class ComandasAdapter(
         holder.tvEstado.text = comanda.estado
         holder.tvCliente.text = comanda.comensal ?: ""
         holder.tvTipoPedido.text = if (comanda.esParaLlevar) "Para llevar" else "Comer aquí"
+
+        val notas = comanda.notas
+        if (!notas.isNullOrBlank()) {
+            holder.tvNotas.visibility = View.VISIBLE
+            holder.tvNotas.text = "Observaciones: $notas"
+        } else {
+            holder.tvNotas.visibility = View.GONE
+        }
 
         holder.layoutDetalles.removeAllViews()
         buildDetalleView(holder.layoutDetalles, comanda, detalles)

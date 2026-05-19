@@ -19,6 +19,10 @@ class CocinaAdapter(
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvFolio: TextView = itemView.findViewById(R.id.tvFolioCocina)
         val tvCliente: TextView = itemView.findViewById(R.id.tvClienteCocina)
+
+        val tvTipoPedido: TextView = itemView.findViewById(R.id.tvTipoPedidoCocina)
+
+        val tvNotas: TextView = itemView.findViewById(R.id.tvNotasCocina)
         val layoutItems: LinearLayout = itemView.findViewById(R.id.layoutItemsCocina)
         val barraProgreso: ProgressBar = itemView.findViewById(R.id.barraProgreso)
     }
@@ -35,6 +39,15 @@ class CocinaAdapter(
         holder.tvFolio.text = comandaCocina.comanda.folio?.toString() ?: "Sin folio"
         holder.tvCliente.text = comandaCocina.comanda.comensal ?: ""
 
+        holder.tvTipoPedido.text = if (comandaCocina.comanda.esParaLlevar) "Para llevar" else "Comer aquí"
+
+        val notas = comandaCocina.comanda.notas
+        if (!notas.isNullOrBlank()) {
+            holder.tvNotas.visibility = View.VISIBLE
+            holder.tvNotas.text = "Notas: $notas"
+        } else {
+            holder.tvNotas.visibility = View.GONE
+        }
         // Barra de progreso
         val progreso = comandaCocina.getProgreso()
         val remaining = (1f - progreso).coerceIn(0f, 1f)

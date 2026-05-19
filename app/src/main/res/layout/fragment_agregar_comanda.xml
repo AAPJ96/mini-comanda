@@ -121,16 +121,16 @@
             android:text="Pedidos por persona"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
+        <!-- Total general -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_pedidos_personas"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_marginTop="8dp"
+            android:layout_weight="1"
             android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        <!-- Total general -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -182,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:backgroundTint="@color/red"
-                android:text="Cancelar"
+                android:text="Descartar"
                 android:textColor="@android:color/white" />
 
             <com.google.android.material.button.MaterialButton

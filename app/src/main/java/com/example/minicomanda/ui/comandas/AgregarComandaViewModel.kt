@@ -165,6 +165,7 @@ class AgregarComandaViewModel(application: Application) : AndroidViewModel(appli
     }
 
     // ─── Construir la comanda final (para ser guardada por ComandasViewModel) ───
+    // ─── Construir la comanda final (para ser guardada por ComandasViewModel) ───
     fun construirComanda(): Pair<Comanda, List<ItemComanda>> {
         val folio = null  // se asignará tras sincronización
         val fecha = System.currentTimeMillis()
@@ -180,7 +181,8 @@ class AgregarComandaViewModel(application: Application) : AndroidViewModel(appli
             comensal = nombreCliente,
             personas = _personasCount.value ?: 1,
             esParaLlevar = paraLlevar,
-            notas = if (paraLlevar) observaciones else null,
+            // CORRECCIÓN: Guardamos las notas sin importar el tipo de pedido
+            notas = observaciones.ifBlank { null },
             estado = "ACTIVO",
             fechaCreacion = fecha,
             fechaModificacion = fecha,
@@ -191,7 +193,6 @@ class AgregarComandaViewModel(application: Application) : AndroidViewModel(appli
         val items = mutableListOf<ItemComanda>()
         val count = _personasCount.value ?: 1
         for (personaIndex in 0 until count) {
-            val nombrePersona = "Persona ${personaIndex + 1}"
             val pedidos = _pedidosPorPersona[personaIndex] ?: emptyMap()
             for (item in pedidos.values) {
                 items.add(
