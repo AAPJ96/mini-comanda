@@ -97,7 +97,7 @@
                             android:textColor="@color/blue" />
 
                         <TextView
-                            android:id="@+id/tvDummyResultados"
+                            android:id="@+id/tvContenidoResumen"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"

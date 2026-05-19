@@ -26,19 +26,38 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Solución para la "píldora" de selección (API 28 compatible)
+        // Configuración del bottom navigation (como estaba)
         binding.bottomNavigation.itemActiveIndicatorColor = ColorStateList.valueOf(Color.TRANSPARENT)
 
-        // Configuración de Toolbar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // Fragment inicial
-        if (savedInstanceState == null) {
-            navigateToSection(CocinaFragment(), "Cocina")
+        // Obtener sala guardada
+        val prefs = getSharedPreferences("minicomanda_prefs", MODE_PRIVATE)
+        val salaId = prefs.getString("sala_id", null)
+
+        // Elegir fragmento inicial
+        val fragmentoInicial: Fragment
+        val tituloInicial: String
+        val itemIdInicial: Int
+        if (salaId.isNullOrEmpty()) {
+            fragmentoInicial = SalasFragment()
+            tituloInicial = "SALAS"
+            itemIdInicial = R.id.nav_salas
+        } else {
+            fragmentoInicial = CocinaFragment()
+            tituloInicial = "COCINA"
+            itemIdInicial = R.id.nav_cocina
         }
 
-        // Listener de navegación
+        // Cargar fragmento inicial si es primera vez
+        if (savedInstanceState == null) {
+            loadFragment(fragmentoInicial)
+            updateSectionTitle(tituloInicial)
+            binding.bottomNavigation.selectedItemId = itemIdInicial
+        }
+
+        // Configurar listener de navegación (igual que antes)
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             val fragment = when (item.itemId) {
                 R.id.nav_cocina -> CocinaFragment()
@@ -48,18 +67,15 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_salas -> SalasFragment()
                 else -> null
             }
-
             fragment?.let {
-                navigateToSection(it, item.title.toString())
-
-                // Animación: Buscamos la vista del ítem seleccionado
-                val itemView = binding.bottomNavigation.findViewById<View>(item.itemId)
-                animateIcon(itemView)
+                loadFragment(it)
+                updateSectionTitle(item.title.toString())
+                animateIcon(binding.bottomNavigation.findViewById<View>(item.itemId))
                 true
             } ?: false
         }
 
-        // Observar la sala actual
+        // Observar la sala actual (para actualizar toolbar)
         lobbyViewModel.currentSala.observe(this) { sala ->
             val roomText = if (sala != null) "Sala: ${sala.id}" else "Sala: ---"
             binding.tvRoomId.text = roomText

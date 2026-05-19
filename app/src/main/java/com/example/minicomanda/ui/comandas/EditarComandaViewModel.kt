@@ -64,6 +64,9 @@ class EditarComandaViewModel(application: Application, private val comandaId: St
     private val _menuItems = MutableLiveData<List<ItemMenu>>(emptyList())
     val menuItems: LiveData<List<ItemMenu>> = _menuItems
 
+    private val _mensaje = MutableLiveData<String>()
+    val mensaje: LiveData<String> = _mensaje
+
     init {
         // Cargar el menú de la sala activa
         val salaId = obtenerSalaIdActiva()
@@ -244,6 +247,15 @@ class EditarComandaViewModel(application: Application, private val comandaId: St
             }
         }
         return Pair(comanda, items)
+    }
+
+    // Dentro de la clase EditarComandaViewModel
+
+    fun cancelarComanda() {
+        viewModelScope.launch {
+            comandaDao.cancelar(comandaId, System.currentTimeMillis())
+            _mensaje.postValue("Comanda cancelada")
+        }
     }
 
     class Factory(private val app: Application, private val comandaId: String) : ViewModelProvider.Factory {

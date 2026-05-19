@@ -10,7 +10,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minicomanda.R
-import com.example.minicomanda.data.local.entities.ItemComanda
 
 class CocinaAdapter(
     private var comandas: List<ComandaCocina>,
@@ -55,14 +54,24 @@ class CocinaAdapter(
             val tvCantidadNombre = itemView.findViewById<TextView>(R.id.tvCantidadNombre)
             val cbListo = itemView.findViewById<CheckBox>(R.id.cbListo)
 
-            // Nombre del ítem: podemos obtenerlo desde un mapa auxiliar, por ahora placeholder
-            val nombre = "Ítem ${item.itemMenuId}"
-            tvCantidadNombre.text = "${item.cantidad}x $nombre"
+            // Usamos las nuevas relaciones
+            val datosPedido = item.itemComanda
+            val datosPlatillo = item.itemMenu
 
-            cbListo.isChecked = item.id in comandaCocina.itemsPreparados
+            // Asignamos el texto real
+            tvCantidadNombre.text = "${datosPedido.cantidad}x ${datosPlatillo.nombre}"
+
+            // 1. Apagamos el listener temporalmente para evitar bugs al scrollear
+            cbListo.setOnCheckedChangeListener(null)
+
+            // 2. Evaluamos directamente el estado en la base de datos
+            cbListo.isChecked = (datosPedido.estado == "LISTO")
+
+            // 3. Volvemos a prender el listener
             cbListo.setOnCheckedChangeListener { _, isChecked ->
-                onItemCheckChange(position, item.id, isChecked)
+                onItemCheckChange(position, datosPedido.id, isChecked)
             }
+
             holder.layoutItems.addView(itemView)
         }
     }

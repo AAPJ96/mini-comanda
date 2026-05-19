@@ -15,5 +15,9 @@
         <item name="colorOnSurface">#000000</item>
     </style>
 
+    <style name="TemaDialogoOnboarding" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="backgroundTint">@color/white</item>
 
+        <item name="colorSurface">@color/white</item>
+    </style>
 </resources>

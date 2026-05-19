@@ -1,5 +1,6 @@
 package com.example.minicomanda.ui.comandas
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -51,7 +52,7 @@ class EditarComandaFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Mostrar información inicial
-        binding.tvFolio.text = "Folio: ${viewModel.folio}"
+        binding.tvFolio.text = viewModel.folio?.let { "Folio: $it" } ?: "Sin folio"
         binding.tvEstado.text = "Estado: ${viewModel.estado.value}"
 
         // Botón marcar pagado
@@ -177,8 +178,27 @@ class EditarComandaFragment : Fragment() {
             }
         })
 
-        // Botones
-        binding.btnCancelar.setOnClickListener {
+
+        viewModel.mensaje.observe(viewLifecycleOwner) { msg ->
+            if (!msg.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                // Después de cancelar, volver atrás
+                parentFragmentManager.popBackStack()
+            }
+        }
+
+        binding.btnCancelarComanda.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Cancelar comanda")
+                .setMessage("¿Estás seguro de que deseas cancelar esta comanda? Se eliminará de la lista activa.")
+                .setPositiveButton("Sí, cancelar") { _, _ ->
+                    viewModel.cancelarComanda()
+                }
+                .setNegativeButton("No", null)
+                .show()
+        }
+
+        binding.btnCerrar.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
 

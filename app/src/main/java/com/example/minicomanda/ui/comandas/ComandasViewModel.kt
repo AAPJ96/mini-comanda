@@ -10,6 +10,7 @@ import com.example.minicomanda.MiniComandaApplication
 import com.example.minicomanda.data.local.entities.Comanda
 import com.example.minicomanda.data.local.entities.ItemComanda
 import com.example.minicomanda.data.local.entities.ComandaConItems
+import com.example.minicomanda.data.local.entities.ItemComandaConMenu
 import kotlinx.coroutines.launch
 
 class ComandasViewModel(application: Application) : AndroidViewModel(application) {
@@ -34,7 +35,8 @@ class ComandasViewModel(application: Application) : AndroidViewModel(application
     }
 
     // Exponemos un mapa de (comandaId -> List<ItemComanda>) para el adaptador
-    val detalles: LiveData<Map<String, List<ItemComanda>>> = _comandasConItems.map { lista ->
+// AHORA:
+    val detalles: LiveData<Map<String, List<ItemComandaConMenu>>> = _comandasConItems.map { lista ->
         lista.associate { it.comanda.id to it.items }
     }
 
@@ -69,6 +71,7 @@ class ComandasViewModel(application: Application) : AndroidViewModel(application
     }
 
     /** Actualizar comanda existente (desde EditarComandaFragment) */
+    /** Actualizar comanda existente (desde EditarComandaFragment) */
     fun actualizarComanda(comanda: Comanda, items: List<ItemComanda>) {
         viewModelScope.launch {
             val actualizada = comanda.copy(
@@ -77,12 +80,30 @@ class ComandasViewModel(application: Application) : AndroidViewModel(application
             )
             comandaDao.actualizar(actualizada)
 
-            // Para simplificar, eliminamos los ítems antiguos y volvemos a insertar los nuevos
+            // 1. Obtener los ítems como están guardados actualmente en la BD antes de borrarlos
+            val itemsAnteriores = itemComandaDao.obtenerItemsPorComandaSync(comanda.id)
+
+            // Creamos un mapa rápido de asignación: id del ítem -> cantidad guardada
+            val mapaCantidadesAnteriores = itemsAnteriores.associate { it.id to it.cantidad }
+
+            // 2. Eliminamos los ítems antiguos para reescribir
             itemComandaDao.eliminarTodosDeComanda(comanda.id, System.currentTimeMillis())
+
+            // 3. Insertar cada ítem aplicando la regla de validación de cantidad
             items.forEach { item ->
+                val cantidadAnterior = mapaCantidadesAnteriores[item.id]
+
+                // CONDICIÓN REQUERIDA: Si el ítem ya existía pero cambió su cantidad, se reinicia
+                val nuevoEstado = if (cantidadAnterior != null && cantidadAnterior != item.cantidad) {
+                    "EN_PREPARACION"
+                } else {
+                    item.estado // Si no cambió la cantidad, mantiene su estado original (LISTO o EN_PREPARACION)
+                }
+
                 itemComandaDao.insertar(
                     item.copy(
                         comandaId = comanda.id,
+                        estado = nuevoEstado, // <-- Asignamos el estado recalculado
                         fechaModificacion = System.currentTimeMillis(),
                         sincronizado = false
                     )
@@ -92,7 +113,6 @@ class ComandasViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    /** Cancelar (eliminación lógica) */
     fun cancelarComanda(comandaId: String) {
         viewModelScope.launch {
             comandaDao.cancelar(comandaId, System.currentTimeMillis())

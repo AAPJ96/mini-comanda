@@ -31,6 +31,8 @@ interface ItemComandaDao {
     @Query("UPDATE items_comanda SET estado = 'LISTO', fecha_modificacion = :fechaMod WHERE id = :id")
     suspend fun marcarItemListo(id: String, fechaMod: Long)
 
+    @Query("UPDATE items_comanda SET estado = :nuevoEstado, fecha_modificacion = :timestamp WHERE id = :id")
+    suspend fun actualizarEstadoItem(id: String, nuevoEstado: String, timestamp: Long)
     // Obtener ítems que no han sido sincronizados
     @Query("SELECT * FROM items_comanda WHERE sincronizado = 0")
     suspend fun obtenerNoSincronizados(): List<ItemComanda>
@@ -41,4 +43,7 @@ interface ItemComandaDao {
 
     @Query("SELECT * FROM items_comanda WHERE comanda_id = :comandaId AND activo = 1 ORDER BY persona, fecha_creacion")
     suspend fun obtenerTodosDeComandaSync(comandaId: String): List<ItemComanda>
+
+    @Query("SELECT * FROM items_comanda WHERE comanda_id = :comandaId")
+    suspend fun obtenerItemsPorComandaSync(comandaId: String): List<ItemComanda>
 }

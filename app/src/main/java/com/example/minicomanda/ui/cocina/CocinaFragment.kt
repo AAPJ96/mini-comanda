@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.minicomanda.databinding.FragmentCocinaBinding
+import com.example.minicomanda.R
 
 class CocinaFragment : Fragment() {
 
@@ -37,6 +38,43 @@ class CocinaFragment : Fragment() {
 
         viewModel.comandas.observe(viewLifecycleOwner) { comandas ->
             adapter.updateComandas(comandas)
+        }
+
+        // Observamos el evento de comanda completada
+// Observamos el evento de comanda completada
+        viewModel.eventoComandaCompletada.observe(viewLifecycleOwner) { itemId ->
+            if (itemId != null) {
+
+                // 1. Creamos el Snackbar y lo guardamos en una variable
+                val snackbar = com.google.android.material.snackbar.Snackbar.make(
+                    binding.root,
+                    "Comanda completada y removida",
+                    com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+                )
+
+                // 2. Le aplicamos tu color de fondo azul
+                snackbar.view.backgroundTintList = android.content.res.ColorStateList.valueOf(
+                    androidx.core.content.ContextCompat.getColor(requireContext(), R.color.blue)
+                )
+
+                // 3. Le ponemos el texto del mensaje en blanco
+                snackbar.setTextColor(
+                    androidx.core.content.ContextCompat.getColor(requireContext(), R.color.white)
+                )
+
+                // 4. Le ponemos el texto del botón "DESHACER" en blanco (o cámbialo si prefieres otro color para resaltar)
+                snackbar.setActionTextColor(
+                    androidx.core.content.ContextCompat.getColor(requireContext(), R.color.white)
+                )
+
+                // 5. Configuramos la acción y lo mostramos
+                snackbar.setAction("DESHACER") {
+                    viewModel.deshacerItem(itemId)
+                }.show()
+
+                // Limpiamos el evento para que no se repita
+                viewModel.eventoDeshacerMostrado()
+            }
         }
     }
 

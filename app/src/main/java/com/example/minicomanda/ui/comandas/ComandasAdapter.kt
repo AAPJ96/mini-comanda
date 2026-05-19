@@ -8,13 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minicomanda.R
 import com.example.minicomanda.data.local.entities.Comanda
-import com.example.minicomanda.data.local.entities.ItemComanda
+import com.example.minicomanda.data.local.entities.ItemComandaConMenu // <-- Importación actualizada
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ComandasAdapter(
     private var comandas: List<Comanda>,
-    private var detallesPorComanda: Map<String, List<ItemComanda>>,  // clave UUID comanda
+    private var detallesPorComanda: Map<String, List<ItemComandaConMenu>>,  // <-- Tipo actualizado
     private val onEditClick: (Comanda) -> Unit,
     private val mostrarEditar: Boolean = true
 ) : RecyclerView.Adapter<ComandasAdapter.ViewHolder>() {
@@ -53,7 +53,8 @@ class ComandasAdapter(
         holder.btnEditar.setOnClickListener { onEditClick(comanda) }
     }
 
-    private fun buildDetalleView(parent: LinearLayout, comanda: Comanda, detalles: List<ItemComanda>) {
+    // <-- Parámetro actualizado
+    private fun buildDetalleView(parent: LinearLayout, comanda: Comanda, detalles: List<ItemComandaConMenu>) {
         if (detalles.isEmpty()) {
             val tvEmpty = TextView(parent.context).apply {
                 text = "Sin detalles"
@@ -63,15 +64,16 @@ class ComandasAdapter(
             return
         }
 
-        // Agrupar por persona
-        val porPersona = detalles.groupBy { it.persona }
+        // Agrupar por persona leyendo los datos anidados
+        val porPersona = detalles.groupBy { it.itemComanda.persona }
         for ((persona, items) in porPersona) {
             val personaLayout = LayoutInflater.from(parent.context).inflate(R.layout.item_persona, parent, false) as LinearLayout
             val tvPersonaNombre = personaLayout.findViewById<TextView>(R.id.tv_persona_nombre)
             val tvPersonaSubtotal = personaLayout.findViewById<TextView>(R.id.tv_persona_subtotal)
             val layoutItems = personaLayout.findViewById<LinearLayout>(R.id.layout_items)
 
-            val subtotalCentavos = items.sumOf { it.cantidad * it.precioOriginalUnidad }
+            // Suma de centavos leyendo los datos anidados
+            val subtotalCentavos = items.sumOf { it.itemComanda.cantidad * it.itemComanda.precioOriginalUnidad }
             tvPersonaNombre.text = "Persona $persona"
             tvPersonaSubtotal.text = "$${"%.2f".format(subtotalCentavos / 100.0)}"
 
@@ -81,19 +83,22 @@ class ComandasAdapter(
                 val tvNombre = itemLayout.findViewById<TextView>(R.id.tv_nombre)
                 val tvTotal = itemLayout.findViewById<TextView>(R.id.tv_total)
 
-                tvCantidad.text = "${item.cantidad} x"
-                // Necesitamos el nombre del ítem del menú, pero solo tenemos itemMenuId.
-                // Por ahora, usamos un placeholder. Luego podemos mejorarlo con una relación.
-                val nombreItem = "Ítem ${item.itemMenuId}"  // o un mapa temporal
-                tvNombre.text = "$nombreItem ($${"%.2f".format(item.precioOriginalUnidad / 100.0)})"
-                tvTotal.text = "$${"%.2f".format(item.cantidad * item.precioOriginalUnidad / 100.0)}"
+                // Extraemos ambas partes de la relación
+                val pedido = item.itemComanda
+                val menu = item.itemMenu
+
+                tvCantidad.text = "${pedido.cantidad} x"
+
+                // ¡Magia! Ya tenemos el nombre real sin hacer mapas extraños
+                tvNombre.text = "${menu.nombre} ($${"%.2f".format(pedido.precioOriginalUnidad / 100.0)})"
+                tvTotal.text = "$${"%.2f".format(pedido.cantidad * pedido.precioOriginalUnidad / 100.0)}"
 
                 layoutItems.addView(itemLayout)
             }
             parent.addView(personaLayout)
         }
 
-        val totalGeneralCentavos = detalles.sumOf { it.cantidad * it.precioOriginalUnidad }
+        val totalGeneralCentavos = detalles.sumOf { it.itemComanda.cantidad * it.itemComanda.precioOriginalUnidad }
         if (totalGeneralCentavos > 0) {
             val totalView = LayoutInflater.from(parent.context).inflate(R.layout.item_total_row, parent, false)
             val tvTotalValue = totalView.findViewById<TextView>(R.id.tv_total_value)
@@ -104,7 +109,8 @@ class ComandasAdapter(
 
     override fun getItemCount() = comandas.size
 
-    fun updateData(newComandas: List<Comanda>, newDetalles: Map<String, List<ItemComanda>>) {
+    // <-- Parámetro actualizado
+    fun updateData(newComandas: List<Comanda>, newDetalles: Map<String, List<ItemComandaConMenu>>) {
         comandas = newComandas
         detallesPorComanda = newDetalles
         notifyDataSetChanged()

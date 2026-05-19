@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.minicomanda.R
 import com.example.minicomanda.databinding.FragmentHistorialBinding
 import com.example.minicomanda.ui.comandas.ComandasAdapter
+import com.example.minicomanda.data.local.entities.ItemComandaConMenu
 
 class HistorialFragment : Fragment() {
 
@@ -27,7 +28,7 @@ class HistorialFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentHistorialBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -41,16 +42,16 @@ class HistorialFragment : Fragment() {
         (binding.tilAgrupacion.editText as? AutoCompleteTextView)?.setAdapter(spinnerAdapter)
         binding.spinnerAgrupacion.setText("Diario", false) // valor por defecto
 
-        // Listener para el dropdown (placeholder)
-        binding.spinnerAgrupacion.setOnItemClickListener { _, _, _, _ ->
-            Toast.makeText(requireContext(), "Cambio de agrupación (próximamente)", Toast.LENGTH_SHORT).show()
+        // Listener para el dropdown
+        binding.spinnerAgrupacion.setOnItemClickListener { _, _, position, _ ->
+            val seleccion = agrupaciones[position] // "Diario", "Mensual" o "Anual"
+            viewModel.cambiarAgrupacion(seleccion)
         }
 
         // Configurar botones de alternancia
         binding.btnResumen.setOnClickListener {
             binding.layoutResumen.visibility = View.VISIBLE
             binding.recyclerPagadas.visibility = View.GONE
-            // Resaltar botón seleccionado (opcional, aquí solo usamos Toast)
         }
 
         binding.btnComandasPagadas.setOnClickListener {
@@ -62,7 +63,7 @@ class HistorialFragment : Fragment() {
         binding.recyclerPagadas.layoutManager = LinearLayoutManager(requireContext())
         adapterPagadas = ComandasAdapter(
             comandas = emptyList(),
-            detallesPorComanda = emptyMap(),
+            detallesPorComanda = emptyMap<String, List<ItemComandaConMenu>>(), // <-- Especificamos el tipo explícito
             onEditClick = {}, // no se necesita
             mostrarEditar = false
         )
@@ -70,13 +71,23 @@ class HistorialFragment : Fragment() {
 
         // Observar datos del ViewModel
         viewModel.comandasPagadas.observe(viewLifecycleOwner) { comandas ->
-            val detalles = viewModel.detalles.value ?: emptyMap()
+            val detalles = viewModel.detalles.value ?: emptyMap<String, List<ItemComandaConMenu>>() // <-- Especificamos el tipo explícito
             adapterPagadas.updateData(comandas, detalles)
         }
 
         viewModel.detalles.observe(viewLifecycleOwner) { detalles ->
             val comandas = viewModel.comandasPagadas.value ?: emptyList()
             adapterPagadas.updateData(comandas, detalles)
+        }
+
+        viewModel.resumenHtml.observe(viewLifecycleOwner) { textoHtml ->
+            if (!textoHtml.isNullOrEmpty()) {
+                // Traducimos el HTML y lo inyectamos al TextView del resumen
+                binding.tvContenidoResumen.text = androidx.core.text.HtmlCompat.fromHtml(
+                    textoHtml,
+                    androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT
+                )
+            }
         }
     }
 

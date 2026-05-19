@@ -238,6 +238,16 @@
 
             <!-- 11. Acciones especiales (Cerrar cuenta, Marcar pagado) -->
             <Button
+                android:id="@+id/btnCancelarComanda"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Cancelar comanda"
+                android:textColor="@color/red"
+                app:strokeColor="@color/red" />
+
+            <Button
                 android:id="@+id/btnMarcarPagado"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
@@ -247,20 +257,20 @@
                 android:textColor="@color/blue"
                 app:strokeColor="@color/blue" />
 
-            <!-- 12. Botones Guardar / Cancelar -->
+            <!-- 12. Botone cerrar - guardar -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btnCancelar"
+                    android:id="@+id/btnCerrar"
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/red"
-                    android:text="Cancelar"
+                    android:backgroundTint="@color/blue"
+                    android:text="Cerrar"
                     android:textColor="@android:color/white" />
 
                 <Button
