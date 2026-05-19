@@ -32,8 +32,16 @@ class MenuAdapter(
         holder.tvName.text = item.nombre
         // Convertir precio de centavos a moneda
         holder.tvPrice.text = "$${"%.2f".format(item.precio / 100.0)}"
-        // Imagen placeholder (más adelante cargarás con Glide si hay imagen)
-        holder.ivImage.setImageResource(R.drawable.placeholder)
+
+        // NUEVA LÓGICA DE IMAGEN:
+        if (item.imagen != null) {
+            // Si hay bytes guardados, los decodificamos a un Bitmap
+            val bitmap = android.graphics.BitmapFactory.decodeByteArray(item.imagen, 0, item.imagen.size)
+            holder.ivImage.setImageBitmap(bitmap)
+        } else {
+            // Si el platillo no tiene foto, mostramos tu imagen por defecto
+            holder.ivImage.setImageResource(R.drawable.placeholder)
+        }
 
         holder.itemView.setOnClickListener {
             showPopupMenu(holder.itemView, item)
