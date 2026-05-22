@@ -38,10 +38,18 @@ class CocinaFragment : Fragment() {
 
         viewModel.comandas.observe(viewLifecycleOwner) { comandas ->
             adapter.updateComandas(comandas)
+            if (comandas.isEmpty()) {
+                binding.recyclerViewCocina.visibility = View.GONE
+                binding.tvEmptyState.visibility = View.VISIBLE
+                // Opcional: Puedes personalizar el mensaje por pantalla
+                binding.tvEmptyState.text = "Sin órdenes nuevas.\nCuando lleguen, las verás aparecer aquí."
+            } else {
+                binding.recyclerViewCocina.visibility = View.VISIBLE
+                binding.tvEmptyState.visibility = View.GONE
+            }
         }
 
         // Observamos el evento de comanda completada
-// Observamos el evento de comanda completada
         viewModel.eventoComandaCompletada.observe(viewLifecycleOwner) { itemId ->
             if (itemId != null) {
 

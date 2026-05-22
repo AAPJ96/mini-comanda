@@ -43,6 +43,16 @@ class ComandasFragment : Fragment() {
         // Observar comandas y detalles y actualizar el adaptador cuando cualquiera cambie
         viewModel.comandas.observe(viewLifecycleOwner) { comandas ->
             adapter.updateData(comandas, viewModel.detalles.value ?: emptyMap())
+
+            if (comandas.isEmpty()) {
+                binding.recyclerView.visibility = View.GONE
+                binding.tvEmptyState.visibility = View.VISIBLE
+                // Opcional: Puedes personalizar el mensaje por pantalla
+                binding.tvEmptyState.text = "No hay comandas activas en este momento. Usa el botón '+' para agregar comandas."
+            } else {
+                binding.recyclerView.visibility = View.VISIBLE
+                binding.tvEmptyState.visibility = View.GONE
+            }
         }
 
         viewModel.detalles.observe(viewLifecycleOwner) { detalles ->

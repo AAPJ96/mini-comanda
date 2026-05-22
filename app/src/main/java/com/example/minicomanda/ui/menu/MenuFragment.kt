@@ -54,6 +54,15 @@ class MenuFragment : Fragment() {
 
         viewModel.menuItems.observe(viewLifecycleOwner) { items ->
             adapter.updateList(items)
+
+            if (items.isEmpty()) {
+                binding.recyclerView.visibility = View.GONE
+                binding.tvEmptyState.visibility = View.VISIBLE
+                binding.tvEmptyState.text = "El menú está vacío. Usa el botón '+' para agregar platillos."
+            } else {
+                binding.recyclerView.visibility = View.VISIBLE
+                binding.tvEmptyState.visibility = View.GONE
+            }
         }
 
         // Drag & drop
