@@ -25,14 +25,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxBackgroundColor="@android:color/white"
+            app:boxStrokeColor="@color/blue"
+            app:hintTextColor="@color/blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_room_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nombre de la sala"
+                android:hint="Nombre de la sala (opcional)"
                 android:maxLines="1"/>
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.switchmaterial.SwitchMaterial
@@ -40,7 +44,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Sala privada"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp"
+            app:useMaterialThemeColors="false"
+            app:trackTint="@color/selector_switch_track" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_password"
@@ -48,6 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxBackgroundColor="@android:color/white"
             android:visibility="gone">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -59,21 +66,33 @@
                 android:maxLines="1"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/btn_guardar"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="GUARDAR"
-            android:backgroundTint="@color/header_background"/>
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="CANCELAR"
-            android:backgroundTint="@color/pill_text"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_marginTop="16dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cancel"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/red"
+                android:text="Cerrar"
+                android:textColor="@android:color/white" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_guardar"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/blue"
+                android:text="Guardar"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

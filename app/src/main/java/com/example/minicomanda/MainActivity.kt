@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         // Obtener sala guardada
         val prefs = getSharedPreferences("minicomanda_prefs", MODE_PRIVATE)
         val salaId = prefs.getString("sala_id", null)
+        android.util.Log.d("TEST_CREDENCIALES", "Sala guardada: $salaId")
 
         // Elegir fragmento inicial
         val fragmentoInicial: Fragment
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity() {
 
         // Observar la sala actual (para actualizar toolbar)
         lobbyViewModel.currentSala.observe(this) { sala ->
-            val roomText = if (sala != null) "Sala: ${sala.id}" else "Sala: ---"
+            val roomText = if (sala != null) "${sala.id}" else "---"
             binding.tvRoomId.text = roomText
         }
     }

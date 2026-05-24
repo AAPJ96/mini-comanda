@@ -12,10 +12,8 @@ import kotlinx.coroutines.launch
 
 class LobbyViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Antes: private val salaDao = MiniComandaApplication.instance.salaDao
     private val salaDao by lazy { MiniComandaApplication.instance.salaDao }
 
-    // Antes: private val prefs = application.getSharedPreferences(...)
     private val prefs by lazy {
         application.getSharedPreferences("minicomanda_prefs", Context.MODE_PRIVATE)
     }
@@ -49,12 +47,12 @@ class LobbyViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Crear una nueva sala (localmente, sin conexión) */
     fun crearSala(nombre: String, esPrivada: Boolean, contrasena: String?, configuracion: String?) {
-        val id = generarSalaId()   // puedes usar la misma función base62
+        val id = generarSalaId()
         val sala = Sala(
             id = id,
             nombre = nombre,
             esPrivada = esPrivada,
-            contrasena = contrasena,   // texto plano, hasta que se sincronice
+            contrasena = contrasena,
             configuracion = configuracion,
             sincronizado = false
         )
@@ -65,30 +63,34 @@ class LobbyViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /** Unirse a una sala existente (por ahora solo local) */
-    fun unirseASala(id: String, contrasena: String?) {
-        viewModelScope.launch {
-            val sala = salaDao.obtenerPorId(id)
-            if (sala == null) {
-                showMessage("Sala no encontrada")
-            } else if (sala.esPrivada && sala.contrasena != contrasena) {
-                showMessage("Contraseña incorrecta")
-            } else {
-                guardarSesion(sala)
-                showMessage("Te has unido a: ${sala.nombre}")
+    /** * CORRECCIÓN: Unirse a una sala existente devolviendo el resultado de la validación.
+     * Al ser suspend, se ejecuta en el hilo de fondo y permite al Fragment esperar la respuesta.
+     */
+    suspend fun unirseASala(id: String, contrasenaIngresada: String?): Boolean {
+        // 1. Buscamos la sala en la base de datos
+        val sala = salaDao.obtenerPorId(id) ?: return false
+
+        // 2. Si es privada, validamos que la contraseña coincida
+        if (sala.esPrivada || !sala.contrasena.isNullOrEmpty()) {
+            if (sala.contrasena != contrasenaIngresada) {
+                return false // Contraseña incorrecta
             }
         }
+
+        // 3. Si pasa los filtros, guardamos la sesión de forma persistente
+        guardarSesion(sala)
+        return true // Conexión exitosa
     }
 
     /** Salir de la sala actual */
     fun salirDeSala() {
         viewModelScope.launch {
-            _currentSala.value?.let {
-                salaDao.eliminarLogicamente(it.id, System.currentTimeMillis())
-            }
-            prefs.edit().clear().apply()
+            // Solo borramos la "llave" de la sesión actual, no tocamos la base de datos de Room
+            prefs.edit()
+                .remove("sala_id")
+                .apply()
+
             _currentSala.value = null
-            showMessage("Has salido de la sala")
         }
     }
 
@@ -118,7 +120,7 @@ class LobbyViewModel(application: Application) : AndroidViewModel(application) {
             val salaActualizada = sala.copy(
                 nombre = nombre,
                 esPrivada = esPrivada,
-                contrasena = nuevaContrasena ?: sala.contrasena, // si no se pasó contraseña, mantener la anterior
+                contrasena = nuevaContrasena ?: sala.contrasena,
                 fechaModificacion = System.currentTimeMillis(),
                 sincronizado = false
             )
@@ -126,5 +128,10 @@ class LobbyViewModel(application: Application) : AndroidViewModel(application) {
             _currentSala.value = salaActualizada
             showMessage("Sala actualizada")
         }
+    }
+
+    /** Reutiliza la consulta directa a Room */
+    suspend fun obtenerSalaPorIdLocal(salaId: String): Sala? {
+        return salaDao.obtenerPorId(salaId)
     }
 }
