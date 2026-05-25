@@ -14,28 +14,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="16dp"
+        android:baselineAligned="false"
+        android:gravity="center_vertical">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnResumen"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
+            android:layout_gravity="center_vertical"
             android:text="Resumen"
-            android:textColor="@color/blue"
-            app:strokeColor="@color/blue" />
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/blue"
+            app:cornerRadius="8dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnComandasPagadas"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:text="Comandas pagadas"
-            android:textColor="@color/blue"
-            app:strokeColor="@color/blue" />
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/blue"
+            app:cornerRadius="8dp" />
     </LinearLayout>
 
     <!-- Contenedor de las dos vistas -->
@@ -63,6 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Agrupar por"
+                    app:boxBackgroundColor="@android:color/white"
                     app:boxStrokeColor="@color/blue">
 
                     <AutoCompleteTextView
@@ -70,7 +77,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="none"
-                        android:text="Diario" />
+                        android:text="Diario"
+                        android:popupBackground="@android:color/white" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Tarjeta de resultados -->

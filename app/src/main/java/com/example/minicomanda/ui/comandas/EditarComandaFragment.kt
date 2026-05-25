@@ -53,7 +53,7 @@ class EditarComandaFragment : Fragment() {
 
         // Mostrar información inicial
         binding.tvFolio.text = viewModel.folio?.let { "Folio: $it" } ?: "Sin folio"
-        binding.tvEstado.text = "Estado: ${viewModel.estado.value}"
+        binding.tvEstado.text = "${viewModel.estado.value}"
 
         // Botón marcar pagado
         // Botón marcar pagado con Dialog de confirmación y autoguardado
@@ -165,7 +165,7 @@ class EditarComandaFragment : Fragment() {
         }
 
         viewModel.totalGeneral.observe(viewLifecycleOwner) { total ->
-            binding.tvTotalGeneral.text = "Total: $${"%.2f".format(total)}"
+            binding.tvTotalGeneral.text = "$${"%.2f".format(total)}"
         }
 
         // Nombre cliente

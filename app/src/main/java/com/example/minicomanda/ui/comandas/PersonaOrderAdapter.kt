@@ -53,7 +53,7 @@ class PersonaOrderAdapter(
             val btnIncrement = itemView.findViewById<View>(R.id.btn_increment)
             val btnDecrement = itemView.findViewById<View>(R.id.btn_decrement)
 
-            tvNombre.text = menuItem.nombre
+            tvNombre.text = "${menuItem.nombre} ($${"%.2f".format(itemComanda.precioOriginalUnidad / 100.0)})"
             tvCantidad.text = itemComanda.cantidad.toString()
             tvPrecioUnitario.text = "$${"%.2f".format(itemComanda.precioOriginalUnidad / 100.0)}"
             tvTotal.text = "$${"%.2f".format(itemComanda.cantidad * itemComanda.precioOriginalUnidad / 100.0)}"

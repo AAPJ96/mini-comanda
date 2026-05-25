@@ -1,112 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/container_background">
+    android:background="@color/container_background"
+    tools:context=".ui.comandas.EditarComandaFragment"
+    >
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="UNIRSE A SALA"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/header_background"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="32dp"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxBackgroundColor="@android:color/white"
-            app:boxStrokeColor="@color/blue"
-            app:hintTextColor="@color/blue">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_room_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="ID de la sala"
-                android:maxLines="1"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:visibility="gone"
-            app:boxBackgroundColor="@android:color/white"
-            app:boxStrokeColor="@color/blue"
-            app:hintTextColor="@color/blue">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Contraseña"
-                android:inputType="textPassword"
-                android:maxLines="1"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_cancel"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/red"
-                android:text="Cancelar"
-                android:textColor="@android:color/white" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_join"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:backgroundTint="@color/blue"
-                android:text="Unirse"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-</ScrollView>
-    <!--
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxBackgroundColor="@android:color/white"
-            app:boxStrokeColor="@color/blue"
-            app:hintTextColor="@color/blue">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_room_name"
+            <!-- 1. Información de la comanda (folio + estado) -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nombre de la sala (opcional)"
-                android:maxLines="1"/>
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
-    -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/tvFolio"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/blue"
+                        tools:text="Folio: C-001" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Estado: "
+                        android:textSize="15sp"
+                        android:textColor="?android:attr/textColorSecondary" />
+
+                    <TextView
+                        android:id="@+id/tvEstado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/active_green"
+                        tools:text="ACTIVO" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 2. Nombre del cliente -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilNombreCliente"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:hint="Nombre del cliente"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/blue"
+                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNombreCliente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 3. Píldoras de personas -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Personas"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/blue" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPersonasPills"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:paddingHorizontal="4dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_persona_pill" />
+
+            <!-- 4. Selector de columnas -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Columnas del menú" />
+
+                <SeekBar
+                    android:id="@+id/seekbarColumnas"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:max="3"
+                    android:progress="1" />
+
+                <TextView
+                    android:id="@+id/tvNumColumnas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="2" />
+            </LinearLayout>
+
+            <!-- 5. Grid del menú -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Menú"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/blue" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMenuGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                tools:listitem="@layout/item_menu_grid"
+                tools:spanCount="2" />
+
+            <!-- 6. Tipo de pedido -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Tipo de pedido"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/blue" />
+
+            <RadioGroup
+                android:id="@+id/rgTipoPedido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal"
+                android:theme="@style/RadioButtonBlue">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rb_comer_aqui"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Comer aquí" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rb_para_llevar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Para llevar" />
+            </RadioGroup>
+
+            <!-- 7. Pedidos por persona -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Pedidos"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/blue" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPedidosPersonas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_persona_order" />
+
+            <!-- 8. Total general -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total: "
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <TextView
+                    android:id="@+id/tvTotalGeneral"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0.00"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <!-- 9. Observaciones / Dirección -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilObservaciones"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:hint="Dirección / Observaciones"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/blue"
+                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etObservaciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- 10. Estado actual (solo informativo) -->
+            <!-- (ya está en la tarjeta superior, así que podemos omitirlo aquí o dejarlo como recordatorio) -->
+
+            <!-- 11. Acciones especiales (Cerrar cuenta, Marcar pagado) -->
+            <Button
+                android:id="@+id/btnCancelarComanda"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Cancelar comanda"
+                android:textColor="@color/red"
+                app:strokeColor="@color/red" />
+
+            <Button
+                android:id="@+id/btnMarcarPagado"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Marcar como pagado"
+                android:textColor="@color/blue"
+                app:strokeColor="@color/blue" />
+
+            <!-- 12. Botone cerrar - guardar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnCerrar"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/blue"
+                    android:text="Cerrar"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/btnGuardar"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/blue"
+                    android:text="Guardar"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -26,7 +26,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxBackgroundColor="@android:color/white"
+            app:boxStrokeColor="@color/blue"
+            app:hintTextColor="@color/blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_nombre"
@@ -41,7 +44,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxBackgroundColor="@android:color/white"
+            app:boxStrokeColor="@color/blue"
+            app:hintTextColor="@color/blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_precio"
@@ -86,6 +92,7 @@
                 android:layout_marginStart="16dp"
                 android:text="Seleccionar foto"
                 android:backgroundTint="@color/header_background"
+                android:textColor="@color/white"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
         </LinearLayout>
 
@@ -93,7 +100,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxBackgroundColor="@android:color/white"
+            app:boxStrokeColor="@color/blue"
+            app:hintTextColor="@color/blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_descripcion"
@@ -109,7 +119,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxBackgroundColor="@android:color/white"
+            app:boxStrokeColor="@color/blue"
+            app:hintTextColor="@color/blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_categoria"
@@ -120,52 +133,43 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Switch para modificador -->
-        <LinearLayout
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_modificador"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="¿Es descuento?"
-                android:textAppearance="?attr/textAppearanceBody1"
-                android:textColor="@color/header_background"/>
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switch_modificador"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+            android:layout_marginBottom="24dp"
+            android:text="¿Es descuento?"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/black"
+            app:useMaterialThemeColors="false"
+            app:trackTint="@color/selector_switch_track" />
 
         <!-- Botones -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btn_guardar"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cancelar"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="GUARDAR CAMBIOS"
-                android:backgroundTint="@color/header_background"/>
+                android:text="Cerrar"
+                android:backgroundTint="@color/pill_text"
+                android:textColor="@android:color/white"/>
 
-            <Button
-                android:id="@+id/btn_cancelar"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_guardar"
+                style="@style/Widget.Material3.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="CANCELAR"
-                android:backgroundTint="@color/pill_text"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                android:text="Guardar"
+                android:backgroundTint="@color/blue"
+                android:textColor="@android:color/white"/>
         </LinearLayout>
 
     </LinearLayout>

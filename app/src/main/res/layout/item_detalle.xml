@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="1 x"
-        android:textSize="12sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/tv_nombre"
@@ -20,14 +20,14 @@
         android:layout_weight="1"
         android:layout_marginStart="8dp"
         android:text="Taco Carne Maíz ($25.00)"
-        android:textSize="12sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/tv_total"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="$25.00"
-        android:textSize="12sp"
-        android:textColor="@color/pill_text" />
+        android:textSize="16sp"
+        android:textColor="@color/black" />
 
 </LinearLayout>

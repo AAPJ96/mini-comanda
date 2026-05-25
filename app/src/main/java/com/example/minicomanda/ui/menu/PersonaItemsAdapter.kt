@@ -22,7 +22,7 @@ class PersonaItemsAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val (menuItem, itemComanda) = items[position]
-        holder.binding.tvNombre.text = menuItem.nombre
+        holder.binding.tvNombre.text = "${menuItem.nombre} ($${"%.2f".format(itemComanda.precioOriginalUnidad / 100.0)})"
         holder.binding.tvCantidad.text = itemComanda.cantidad.toString()
         // precioOriginalUnidad está en centavos, dividir entre 100.0 para mostrar
         holder.binding.tvPrecioUnitario.text = "$${"%.2f".format(itemComanda.precioOriginalUnidad / 100.0)}"

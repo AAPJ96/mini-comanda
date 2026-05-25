@@ -33,24 +33,36 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:padding="12dp">
 
                     <TextView
                         android:id="@+id/tvFolio"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:layout_weight="1"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
                         android:textColor="@color/blue"
                         tools:text="Folio: C-001" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Estado: "
+                        android:textSize="15sp"
+                        android:textColor="?android:attr/textColorSecondary" />
 
                     <TextView
                         android:id="@+id/tvEstado"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textAppearance="?attr/textAppearanceBody1"
-                        tools:text="Estado: ACTIVA" />
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/active_green"
+                        tools:text="ACTIVO" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -202,15 +214,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Total: "
-                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue" />
 
                 <TextView
                     android:id="@+id/tvTotalGeneral"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="$0.00"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="@color/black" />
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue" />
             </LinearLayout>
 
             <!-- 9. Observaciones / Dirección -->
@@ -233,35 +248,11 @@
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 10. Estado actual (solo informativo) -->
-            <!-- (ya está en la tarjeta superior, así que podemos omitirlo aquí o dejarlo como recordatorio) -->
-
-            <!-- 11. Acciones especiales (Cerrar cuenta, Marcar pagado) -->
-            <Button
-                android:id="@+id/btnCancelarComanda"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="Cancelar comanda"
-                android:textColor="@color/red"
-                app:strokeColor="@color/red" />
-
-            <Button
-                android:id="@+id/btnMarcarPagado"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="Marcar como pagado"
-                android:textColor="@color/blue"
-                app:strokeColor="@color/blue" />
-
-            <!-- 12. Botone cerrar - guardar -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginBottom="18dp">
 
                 <Button
                     android:id="@+id/btnCerrar"
@@ -269,7 +260,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/blue"
+                    android:backgroundTint="@color/red"
                     android:text="Cerrar"
                     android:textColor="@android:color/white" />
 
@@ -284,6 +275,30 @@
                     android:text="Guardar"
                     android:textColor="@android:color/white" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btnMarcarPagado"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Marcar como pagado"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/blue"
+                app:strokeColor="@color/blue" />
+
+            <Button
+                android:id="@+id/btnCancelarComanda"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Cancelar comanda"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/red"
+                app:strokeColor="@color/red" />
+
+
 
         </LinearLayout>
     </ScrollView>

@@ -63,8 +63,19 @@ class SalasFragment : Fragment() {
 
         // Botón Salir de sala
         binding.btnLeaveRoom.setOnClickListener {
-            lobbyViewModel.salirDeSala()
-            Toast.makeText(requireContext(), "Has salido de la sala", Toast.LENGTH_SHORT).show()
+            androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.TemaDialogoOnboarding) // Usando el tema que ya tienes
+                .setTitle("Salir de la sala")
+                .setMessage("¿Estás seguro que deseas salir de esta sala?")
+                .setPositiveButton("Salir") { dialog, _ ->
+                    // Si el usuario confirma, llamamos a la función real del ViewModel
+                    lobbyViewModel.salirDeSala()
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancelar") { dialog, _ ->
+                    // Si se arrepiente, solo cerramos el cuadro sin hacer nada
+                    dialog.dismiss()
+                }
+                .show()
         }
 
         // Botón Editar sala (funcionalidad futura)

@@ -22,20 +22,36 @@
 
             <TextView
                 android:id="@+id/tv_persona_nombre"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Persona 1"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 android:textColor="@color/blue" />
 
             <ImageButton
                 android:id="@+id/btn_delete_persona"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
+                android:layout_marginStart="8dp"
                 android:src="@drawable/ic_delete"
+                app:tint="@color/red"
                 android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="Eliminar persona" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_subtotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Subtotal: $0.00"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
         </LinearLayout>
 
         <LinearLayout
@@ -45,14 +61,5 @@
             android:layout_marginTop="8dp"
             android:orientation="vertical" />
 
-        <TextView
-            android:id="@+id/tv_subtotal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="end"
-            android:text="Subtotal: $0.00"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="@color/red" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

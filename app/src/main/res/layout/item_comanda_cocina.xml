@@ -31,9 +31,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
             android:paddingBottom="8dp"
             android:gravity="center_vertical">
 
@@ -42,7 +42,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textSize="14sp"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
                 tools:text="C-001" />
@@ -52,6 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:textStyle="bold"
                 android:textColor="#424242"
                 tools:text="Gorra azul" />
 
@@ -69,7 +70,6 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textColor="#424242"
-                android:textStyle="bold"
                 tools:text="Para llevar" />
         </LinearLayout>
 
@@ -78,17 +78,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="8dp" />
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="12dp" />
 
         <TextView
             android:id="@+id/tvNotasCocina"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="12dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
             android:textColor="?android:attr/textColorSecondary"
             android:textStyle="italic"
             android:textSize="14sp"

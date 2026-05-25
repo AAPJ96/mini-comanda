@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="C-001"
-            android:textColor="@color/pill_text"
+            android:textColor="@color/blue"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text="25/03/2025"
             android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toEndOf="@+id/tv_folio"
             app:layout_constraintTop_toTopOf="@+id/tv_folio"
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="ACTIVA"
             android:textColor="@color/active_green"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:text="Comer aquí"
             android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_cliente" />
 
